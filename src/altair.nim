@@ -1,6 +1,7 @@
 import math
 import portaudio as PA
 
+
 type
   Signal = tuple[left: float32, right: float32]
 
@@ -13,16 +14,17 @@ proc `+`(s: Signal, v: float32): Signal =
 
 type
   Unit = ref object of RootObj
-    prev: Unit
+    input: Unit
 
-  Saw = ref object
+  Saw = ref object of Unit
     phase: float32
 
 method procUnit(u: Unit): Signal {.base.} =
-  return u.prev.procUnit()
+  return u.input.procUnit()
 
 method procUnit(u: Saw): Signal =
   u.phase += 0.01
+
 
   var
     ph = u.phase mod 1.0f32
