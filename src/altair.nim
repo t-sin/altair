@@ -3,6 +3,7 @@ import math
 import altair/ug
 import altair/soundsystem as ss
 
+
 type
   Saw = ref object of UG
     phase: float32
@@ -21,6 +22,7 @@ method procUG(ug: Saw): Signal =
     s = (v, v) * 0.3f32
 
   s
+
 
 var
   saw = Saw(phase: 0)
