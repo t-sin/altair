@@ -1,5 +1,9 @@
 # Altair - A Little Synthesizer
 
+- fixed pipeline
+- 4 tracks
+- selectable oscilator
+- simple sequencer
 
 ## Author
 
