@@ -4,6 +4,13 @@ import portaudio as PA
 type
   Signal = tuple[left: float32, right: float32]
 
+proc `*`(s: Signal, v: float32): Signal =
+  return (s.left * v, s.right * v)
+
+proc `+`(s: Signal, v: float32): Signal =
+  return (s.left + v, s.right + v)
+
+
 type
   Unit = ref object of RootObj
     prev: Unit
@@ -25,7 +32,7 @@ method procUnit(u: Saw): Signal =
     s = (1.0f32, 1.0f32)
   else:
     var v = -2 * ph + 1
-    s = (v, v)
+    s = (v, v) * 0.3f32
 
   return s
 
