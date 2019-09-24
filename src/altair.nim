@@ -1,32 +1,17 @@
 import math
-import portaudio as PA
 
-
-type
-  Signal = tuple[left: float32, right: float32]
-
-proc `*`(s: Signal, v: float32): Signal =
-  (s.left * v, s.right * v)
-
-proc `+`(s: Signal, v: float32): Signal =
-  (s.left + v, s.right + v)
-
+import altair/ug
+import altair/soundsystem as ss
 
 type
-  Unit = ref object of RootObj
-    input: Unit
-
-  Saw = ref object of Unit
+  Saw = ref object of UG
     phase: float32
 
-method procUnit(u: Unit): Signal {.base.} =
-  u.input.procUnit()
-
-method procUnit(u: Saw): Signal =
-  u.phase += 0.01
+method procUG(ug: Saw): Signal =
+  ug.phase += 0.01
 
   var
-    ph = u.phase mod 1.0f32
+    ph = ug.phase mod 1.0f32
     s: Signal
 
   if ph <= 0.0f32:
@@ -37,39 +22,8 @@ method procUnit(u: Saw): Signal =
 
   s
 
-
 var
-  stream: PStream
-  osc = Saw(phase: 0)
+  saw = Saw(phase: 0)
+  soundsystem = ss.start(saw)
 
-proc fillPaBuffer(
-  inBuf, outBuf: pointer, framesPerBuf: culong,
-      timeInfo: ptr TStreamCallbackTimeInfo,
-      statusFlags: TStreamCallbackFlags,
-      userData: pointer): cint {.cdecl.} =
-
-  var
-    osc = cast[ptr Saw](userData)[]
-    outBuf = cast[ptr array[0xffffffff, Signal]](outBuf)
-
-  for i in 0..< framesPerBuf.int:
-    outBuf[i] = procUnit(osc)
-
-  scrContinue.cint
-
-discard PA.Initialize()
-discard PA.OpenDefaultStream(cast[PStream](stream.addr),
-                     numInputChannels = 0,
-                     numOutputChannels = 2,
-                     sampleFormat = sfFloat32,
-                     sampleRate = 44_100,
-                     framesPerBuffer = 256,
-                     streamCallback = fillPaBuffer,
-                     userData = cast[pointer](osc.addr))
-discard PA.StartStream(stream)
-
-PA.Sleep(2000)
-
-discard PA.StopStream(stream)
-discard PA.CloseStream(stream)
-discard PA.Terminate()
+ss.stop(soundsystem)
