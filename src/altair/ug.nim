@@ -1,3 +1,5 @@
+import math
+
 type
   Signal* = tuple[left: float32, right: float32]
 
@@ -20,10 +22,10 @@ method procUG*(ug: UG, sampleRate: float32): Signal {.base.} =
 
 
 type
-  Osc = ref object of UG
+  Osc* = ref object of UG
     phase*: float32
     freq*: float32
-  Saw = ref object of Osc
+  Saw* = ref object of Osc
 
 method procUG*(ug: Saw, sampleRate: float32): Signal =
   var
@@ -41,7 +43,7 @@ method procUG*(ug: Saw, sampleRate: float32): Signal =
 
 
 type
-  Mix = ref object of UG
+  Mix* = ref object of UG
     sources*: seq[UG]
     amp*: float32
 
