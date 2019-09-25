@@ -4,6 +4,7 @@ type
   Signal* = tuple[left: float32, right: float32]
   MasterInfo* = ref object
     sampleRate*: float32
+    tick*: uint64
 
 proc `*`*(s: Signal, v: float32): Signal =
   (s.left * v, s.right * v)
