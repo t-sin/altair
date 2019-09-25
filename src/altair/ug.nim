@@ -46,9 +46,71 @@ method procUG*(ug: Saw, mi: MasterInfo): Signal =
 
 
 type
+  ADSR* = enum
+    Attack, Decay, Sustin, Release, None
+  Env* = ref object of UG
+    adsr*: ADSR
+    eplaced*: uint64
+    a*: float32
+    d*: float32
+    s*: float64
+    r*: float32
+
+method procUG*(ug: Env, mi: MasterInfo): Signal =
+  var
+    a: uint64 = (ug.a * mi.sampleRate).uint64
+    d: uint64 = (ug.d * mi.sampleRate).uint64
+    s: float32 = ug.s
+    r: uint64 = (ug.r * mi.sampleRate).uint64
+    v: float32
+
+  if ug.adsr == Attack:
+    if ug.eplaced < a:
+      v = ug.eplaced.float32 / a.float32
+
+    elif ug.eplaced < a + d:
+      v = 1.0 - (1.0 - s) * ((ug.eplaced - a).float32 / d.float32)
+      ug.adsr = Decay
+
+    else:
+      v = ug.eplaced.float32 / a.float32
+      ug.adsr = Decay
+
+  elif ug.adsr == Decay:
+    if ug.eplaced < a + d:
+      v = 1.0 - (1.0 - s) * ((ug.eplaced - a).float32 / d.float32)
+
+    elif ug.eplaced >= a + d:
+      v = s
+      ug.adsr = Sustin
+
+    else:
+      v = 0.0
+      ug.adsr = None
+
+  elif ug.adsr == Sustin:
+    v = s
+
+  elif ug.adsr == Release:
+    if ug.eplaced < r:
+      v = s - ug.eplaced.float32 * (s / r.float32)
+    else:
+      v = 0.0
+      ug.adsr = None
+
+  else:  # None
+    v = 0.0f32
+
+  ug.eplaced += 1
+  (v, v)
+
+
+type
   Mix* = ref object of UG
     sources*: seq[UG]
     amp*: float32
+  Mul* = ref object of UG
+    sources*: seq[UG]
 
 method procUG*(ug: Mix, mi: MasterInfo): Signal =
   var
@@ -58,3 +120,12 @@ method procUG*(ug: Mix, mi: MasterInfo): Signal =
     s = s + src.procUG(mi)
 
   s * ug.amp
+
+method procUG*(ug: Mul, mi: MasterInfo): Signal =
+  var
+    s = (1.0f32, 1.0f32)
+
+  for src in ug.sources:
+    s = s * src.procUG(mi).left
+
+  s
