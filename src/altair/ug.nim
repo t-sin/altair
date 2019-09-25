@@ -2,6 +2,8 @@ import math
 
 type
   Signal* = tuple[left: float32, right: float32]
+  MasterInfo* = ref object
+    sampleRate*: float32
 
 proc `*`*(s: Signal, v: float32): Signal =
   (s.left * v, s.right * v)
@@ -17,8 +19,8 @@ type
   UG* = ref object of RootObj
     input: UG
 
-method procUG*(ug: UG, sampleRate: float32): Signal {.base.} =
-  ug.input.procUG(sampleRate)
+method procUG*(ug: UG, mi: MasterInfo): Signal {.base.} =
+  ug.input.procUG(mi)
 
 
 type
@@ -27,7 +29,7 @@ type
     freq*: float32
   Saw* = ref object of Osc
 
-method procUG*(ug: Saw, sampleRate: float32): Signal =
+method procUG*(ug: Saw, mi: MasterInfo): Signal =
   var
     ph = ug.phase mod 1.0f32
     s: Signal
@@ -38,7 +40,7 @@ method procUG*(ug: Saw, sampleRate: float32): Signal =
     var v = -2 * ph + 1
     s = (v, v)
 
-  ug.phase += ug.freq / sampleRate / math.PI
+  ug.phase += ug.freq / mi.sampleRate / math.PI
   s
 
 
@@ -47,11 +49,11 @@ type
     sources*: seq[UG]
     amp*: float32
 
-method procUG*(ug: Mix, sampleRate: float32): Signal =
+method procUG*(ug: Mix, mi: MasterInfo): Signal =
   var
     s = (0.0f32, 0.0f32)
 
   for src in ug.sources:
-    s = s + procUG(src, sampleRate)
+    s = s + src.procUG(mi)
 
   s * ug.amp
