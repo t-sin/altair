@@ -1,13 +1,15 @@
 import portaudio as PA
 
 import ug
+import ev
 
 
 type
   SoundSystem* = ref object
     stream*: PStream
-    masterInfo*: MasterInfo
+    mi*: MasterInfo
     rootUG*: UG
+    events*: seq[Seq]
 
 proc paCallback(
         inBuf, outBuf: pointer, framesPerBuf: culong,
@@ -20,18 +22,22 @@ proc paCallback(
     outBuf = cast[ptr array[0xffffffff, Signal]](outBuf)
 
   for i in 0..<framesPerBuf.int:
-    outBuf[i] = procUG(soundsystem.rootUG, soundsystem.masterInfo)
+    for ev in soundsystem.events:
+      procSeq(ev, soundsystem.mi)
+
+    outBuf[i] = procUG(soundsystem.rootUG, soundsystem.mi)
+
+    soundsystem.mi.tick += 1
+    soundsystem.mi.sec += 1.0 / soundsystem.mi.sampleRate
 
   scrContinue.cint
 
 
-proc start*(ug: UG): SoundSystem =
-  const
-    sampleRate = 44100
+proc start*(ug: UG, ev: seq[Seq]): SoundSystem =
   var
     stream: PStream
-    mi: MasterInfo = MasterInfo(sampleRate: sampleRate)
-    soundsystem: SoundSystem = SoundSystem(stream: stream, rootUG: ug, masterInfo: mi)
+    mi = MasterInfo(sampleRate: 44100)
+    soundsystem = SoundSystem(stream: stream, rootUG: ug, events: ev, mi: mi)
 
   discard PA.Initialize()
   discard PA.OpenDefaultStream(
@@ -39,7 +45,7 @@ proc start*(ug: UG): SoundSystem =
     numInputChannels = 0,
     numOutputChannels = 2,
     sampleFormat = sfFloat32,
-    sampleRate = sampleRate,
+    sampleRate = mi.sampleRate,
     framesPerBuffer = 2048,
     streamCallback = paCallback,
     userData = cast[pointer](soundsystem.addr))
