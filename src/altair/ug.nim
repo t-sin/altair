@@ -1,4 +1,6 @@
 import math
+import random
+
 
 type
   Signal* = tuple[left: float32, right: float32]
@@ -29,6 +31,8 @@ type
     phase*: float32
     freq*: float32
   Saw* = ref object of Osc
+  Rnd* = ref object of Osc
+    v: float32
 
 method procUG*(ug: Saw, mi: MasterInfo): Signal =
   var
@@ -43,6 +47,14 @@ method procUG*(ug: Saw, mi: MasterInfo): Signal =
 
   ug.phase += ug.freq / mi.sampleRate / 2
   s
+
+method procUG*(ug: Rnd, mi: MasterInfo): Signal =
+  if ug.phase >= ug.freq:
+    ug.phase = 0
+    ug.v = (rand(2.0) - 1.0).float32
+
+  ug.phase += 1
+  (ug.v, ug.v)
 
 
 type
