@@ -6,6 +6,7 @@ import ug
 type
   SoundSystem* = ref object
     stream*: PStream
+    sampleRate*: float32
     rootUG*: UG
 
 proc paCallback(
@@ -19,15 +20,17 @@ proc paCallback(
     outBuf = cast[ptr array[0xffffffff, Signal]](outBuf)
 
   for i in 0..<framesPerBuf.int:
-    outBuf[i] = procUG(soundsystem.rootUG)
+    outBuf[i] = procUG(soundsystem.rootUG, soundsystem.sampleRate)
 
   scrContinue.cint
 
 
 proc start*(ug: UG): SoundSystem =
+  const
+    sampleRate = 44100
   var
     stream: PStream
-    soundsystem: SoundSystem = SoundSystem(stream: stream, rootUG: ug)
+    soundsystem: SoundSystem = SoundSystem(stream: stream, rootUG: ug, sampleRate: sampleRate)
 
   discard PA.Initialize()
   discard PA.OpenDefaultStream(
@@ -35,8 +38,8 @@ proc start*(ug: UG): SoundSystem =
     numInputChannels = 0,
     numOutputChannels = 2,
     sampleFormat = sfFloat32,
-    sampleRate = 44_100,
-    framesPerBuffer = 256,
+    sampleRate = sampleRate,
+    framesPerBuffer = 2048,
     streamCallback = paCallback,
     userData = cast[pointer](soundsystem.addr))
   discard PA.StartStream(stream)

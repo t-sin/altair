@@ -12,5 +12,5 @@ type
   UG* = ref object of RootObj
     input: UG
 
-method procUG*(ug: UG): Signal {.base.} =
-  ug.input.procUG()
+method procUG*(ug: UG, sampleRate: float32): Signal {.base.} =
+  ug.input.procUG(sampleRate)
