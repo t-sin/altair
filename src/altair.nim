@@ -6,11 +6,11 @@ import altair/soundsystem as ss
 
 type
   Osc = ref object of UG
-    phase: float32
-    freq: float32
+    phase*: float32
+    freq*: float32
   Saw = ref object of Osc
 
-method procUG(ug: Saw, sampleRate: float32): Signal =
+method procUG*(ug: Saw, sampleRate: float32): Signal =
   var
     ph = ug.phase mod 1.0f32
     s: Signal
