@@ -41,7 +41,7 @@ method procUG*(ug: Saw, mi: MasterInfo): Signal =
     var v = -2 * ph + 1
     s = (v, v)
 
-  ug.phase += ug.freq / mi.sampleRate / math.PI
+  ug.phase += ug.freq / mi.sampleRate / 2
   s
 
 
