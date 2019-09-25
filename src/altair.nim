@@ -24,8 +24,25 @@ method procUG*(ug: Saw, sampleRate: float32): Signal =
   ug.phase += ug.freq / sampleRate / math.PI
   s
 
-var
-  saw = Saw(phase: 0, freq: 440)
-  soundsystem = ss.start(saw)
 
-ss.stop(soundsystem)
+type
+  Mix = ref object of UG
+    sources*: seq[UG]
+    amp*: float32
+
+method procUG*(ug: Mix, sampleRate: float32): Signal =
+  var
+    s = (0.0f32, 0.0f32)
+
+  for src in ug.sources:
+    s = s + procUG(src, sampleRate)
+
+  s * ug.amp
+
+
+var
+  saw1 = Saw(phase: 0, freq: 440)
+  saw2 = Saw(phase: 0, freq: 445)
+  mix = Mix(sources: @[saw1.UG, saw2.UG], amp: 0.2)
+
+ss.stop(ss.start(mix))
