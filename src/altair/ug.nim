@@ -17,3 +17,39 @@ type
 
 method procUG*(ug: UG, sampleRate: float32): Signal {.base.} =
   ug.input.procUG(sampleRate)
+
+
+type
+  Osc = ref object of UG
+    phase*: float32
+    freq*: float32
+  Saw = ref object of Osc
+
+method procUG*(ug: Saw, sampleRate: float32): Signal =
+  var
+    ph = ug.phase mod 1.0f32
+    s: Signal
+
+  if ph == 0.0f32:
+    s = (1.0f32, 1.0f32)
+  else:
+    var v = -2 * ph + 1
+    s = (v, v)
+
+  ug.phase += ug.freq / sampleRate / math.PI
+  s
+
+
+type
+  Mix = ref object of UG
+    sources*: seq[UG]
+    amp*: float32
+
+method procUG*(ug: Mix, sampleRate: float32): Signal =
+  var
+    s = (0.0f32, 0.0f32)
+
+  for src in ug.sources:
+    s = s + procUG(src, sampleRate)
+
+  s * ug.amp
