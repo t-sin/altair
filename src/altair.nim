@@ -2,7 +2,7 @@ import math
 
 import altair/ug
 import altair/ev
-import altair/soundsystem as ss
+import altair/soundsystem
 
 
 var
@@ -26,9 +26,8 @@ proc handleCtrlC() {.noconv.} =
 
 setControlCHook(handleCtrlC)
 
-
 try:
-  ss.stop(ss.start(mix2, @[rhythm.EV]))
+  synthesize(mix2, @[rhythm.EV])
 
 except Exception:
   quit(0)

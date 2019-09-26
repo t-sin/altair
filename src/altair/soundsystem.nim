@@ -33,7 +33,7 @@ proc paCallback(
   scrContinue.cint
 
 
-proc start*(ug: UG, ev: seq[EV]): SoundSystem =
+proc synthesize*(ug: UG, ev: seq[EV]) =
   var
     stream: PStream
     mi = MasterInfo(sampleRate: 44100)
@@ -52,10 +52,7 @@ proc start*(ug: UG, ev: seq[EV]): SoundSystem =
   discard PA.StartStream(stream)
 
   PA.Sleep(2000)
-  soundsystem
 
-
-proc stop*(ss: SoundSystem) =
-  discard PA.StopStream(ss.stream)
-  discard PA.CloseStream(ss.stream)
+  discard PA.StopStream(stream)
+  discard PA.CloseStream(stream)
   discard PA.Terminate()
