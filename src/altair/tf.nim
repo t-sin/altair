@@ -146,5 +146,3 @@ proc parseProgram*(stream: Stream): seq[Cell] =
 
 proc initVM*(vm: VM) =
   vm.addWord(".s", Cell(kind: Builtin, builtin: vmPrintStack))
-
-
