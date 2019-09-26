@@ -19,4 +19,16 @@ var
   mul = Mul(sources: @[env.UG, rnd.UG])
   mix2 = Mix(sources: @[mul.UG], amp: 0.2)
 
-ss.stop(ss.start(mix2, @[rhythm.EV]))
+
+proc handleCtrlC() {.noconv.} =
+  echo "interrupted by user!"
+  raise newException(Exception, "interrupted by user!")
+
+setControlCHook(handleCtrlC)
+
+
+try:
+  ss.stop(ss.start(mix2, @[rhythm.EV]))
+
+except Exception:
+  quit(0)
