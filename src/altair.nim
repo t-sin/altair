@@ -1,8 +1,10 @@
 import math
+import streams
 
 import altair/ug
 import altair/ev
 import altair/soundsystem
+import altair/tf
 
 
 var
@@ -31,3 +33,16 @@ try:
 
 except Exception:
   quit(0)
+
+
+var vm = makeVM()
+vm.initVM()
+vm.addWord("hoge", Cell(kind: Num, num: 42.0))
+echo vm.findWord("hoge").repr
+
+var stream = newStringStream("""
+.s
+""")
+
+vm.program = parseProgram(stream)
+vm.interpret()
