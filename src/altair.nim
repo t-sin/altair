@@ -11,8 +11,8 @@ var
   rnd = Rnd(phase: 0, freq: 0)
 
 var
-  env = Env(adsr: Release, eplaced: 0, a: 0, d: 0.04, s: 0, r: 0)
-  rhythm = Seq(env: env, osc: rnd.Osc, pat: len_to_pos(120, @[3,3,3,3]))
+  env = Env(adsr: Release, eplaced: 0, a: 0, d: 0.04, s: 0.1, r: 0.2)
+  rhythm = Seq(env: env, osc: rnd.Osc, pat: len_to_pos(120, @[2,-1,1,1,1,1,1,2,2,2,2]))
 
 var
   mix1 = Mix(sources: @[saw1.UG, saw2.UG], amp: 1)
