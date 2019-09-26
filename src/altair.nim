@@ -37,11 +37,11 @@ except Exception:
 
 var vm = makeVM()
 vm.initVM()
-vm.addWord("hoge", Cell(kind: Num, num: 42.0))
+vm.addWord("hoge", Cell(kind: Number, number: 42.0))
 echo vm.findWord("hoge").repr
 
 var stream = newStringStream("""
-.s
+-1.0 2 3 .s
 """)
 
 vm.program = parseProgram(stream)
