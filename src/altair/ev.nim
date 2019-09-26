@@ -7,7 +7,6 @@ type
   Note* = tuple[freq: float32, sec: float, adsr: ADSR]
 
 proc len_to_ratio*(n: int): float =
-  echo $(n, (1.0 / 32.0) * pow(2.0, n.float))
   (1.0 / 32.0) * pow(2.0, n.float)
 
 proc len_to_pos*(bpm: float, len: seq[int]): seq[Note] =
