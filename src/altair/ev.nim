@@ -27,14 +27,20 @@ proc len_to_pos*(bpm: float, len: seq[int]): seq[Note] =
 
 type
   EV* = ref object of RootObj
+
+method procEV*(ev: EV, mi: MasterInfo) {.base.} =
+  discard
+
+method procCompleted*(ev: EV): bool {.base.} =
+  true
+
+
+type
   Seq* = ref object of EV
     osc*: Osc
     env*: Env
     pat*: seq[Note]
     idx: int
-
-method procEV*(ev: EV, mi: MasterInfo) {.base.} =
-  discard
 
 method procEV*(ev: Seq, mi: MasterInfo) =
   while ev.idx < ev.pat.len and mi.sec >= ev.pat[ev.idx].sec:
@@ -42,3 +48,6 @@ method procEV*(ev: Seq, mi: MasterInfo) =
       ev.env.eplaced = 0
       ev.osc.freq = ev.pat[ev.idx].freq
       ev.idx += 1
+
+method procCompleted*(ev: Seq): bool =
+  ev.idx >= ev.pat.len and ev.env.adsr == None

@@ -10,6 +10,7 @@ type
     mi*: MasterInfo
     rootUG*: UG
     events*: seq[EV]
+    playing*: bool
 
 proc paCallback(
         inBuf, outBuf: pointer, framesPerBuf: culong,
@@ -20,6 +21,7 @@ proc paCallback(
   var
     soundsystem = cast[ptr SoundSystem](userData)[]
     outBuf = cast[ptr array[0xffffffff, Signal]](outBuf)
+    completed = true
 
   for i in 0..<framesPerBuf.int:
     for ev in soundsystem.events:
@@ -30,14 +32,21 @@ proc paCallback(
     soundsystem.mi.tick += 1
     soundsystem.mi.sec += 1.0 / soundsystem.mi.sampleRate
 
-  scrContinue.cint
+  for ev in soundsystem.events:
+    completed = completed and procCompleted(ev)
+  soundsystem.playing = not completed
 
+  if completed:
+    scrComplete.cint
+  else:
+    scrContinue.cint
 
 proc synthesize*(ug: UG, ev: seq[EV]) =
   var
     stream: PStream
     mi = MasterInfo(sampleRate: 44100)
-    soundsystem = SoundSystem(stream: stream, rootUG: ug, events: ev, mi: mi)
+    soundsystem = SoundSystem(
+      stream: stream, rootUG: ug, events: ev, mi: mi, playing: true)
 
   discard PA.Initialize()
   discard PA.OpenDefaultStream(
@@ -51,7 +60,10 @@ proc synthesize*(ug: UG, ev: seq[EV]) =
     userData = cast[pointer](soundsystem.addr))
   discard PA.StartStream(stream)
 
-  PA.Sleep(2000)
+  while true:
+    PA.Sleep(1000)
+    if soundsystem.playing == false:
+      break
 
   discard PA.StopStream(stream)
   discard PA.CloseStream(stream)
