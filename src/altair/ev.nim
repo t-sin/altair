@@ -16,10 +16,16 @@ proc len_to_pos*(bpm: float, len: seq[int]): seq[Note] =
     notes: seq[Note] = @[]
 
   for len in len:
-    var len_sec = measure * len_to_ratio(len)
-    notes.add((0f32, sec, Attack))
-    notes.add((0f32, sec + len_sec, Release))
-    sec += len_sec
+    if len < 0:
+      if notes[notes.len - 1].adsr != Release:
+        notes.add((0f32, sec, Release))
+      sec += measure * len_to_ratio(abs(len))
+
+    else:
+      var len_sec = measure * len_to_ratio(len)
+      notes.add((0f32, sec, Attack))
+      notes.add((0f32, sec + len_sec, Release))
+      sec += len_sec
 
   notes
 
