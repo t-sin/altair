@@ -3,13 +3,13 @@ import strutils
 
 
 type
-  Type* = enum
     Name, Num, Builtin
+  Kind* = enum
 
   Cell* = ref object
-    kind*: Type
+    kind*: Kind
     name*: string
-    num*: float32
+    number*: float32
     builtin*: proc (vm: VM)
 
   Dict* = ref object
@@ -27,8 +27,8 @@ proc reprCell*(cell: Cell): string =
   var str: string
   if cell.kind == Name:
     str = cell.name
-  elif cell.kind == Num:
-    str = cell.num.repr
+  elif cell.kind == Number:
+    str = cell.number.repr
 
   "<$1:$2>" % [cell.kind.repr, str]
 
@@ -82,24 +82,57 @@ proc interpret*(vm: VM) =
     vm.ip += 1
 
 
-proc parseProgram*(stream: Stream): seq[string] =
+type
+  Token = ref object
+    kind: Kind
+    buf: string
+    wip: bool
+
+proc parseProgram*(stream: Stream): seq[Cell] =
   var
-    program: seq[string] = @[]
-    buf = ""
-    readingSpaces = false
+    program: seq[Cell] = @[]
+    stack: seq[Token]
+    current = Token(kind: Initial, buf: "", wip: true)
 
   while not stream.atEnd():
-    if stream.peekChar() in " \n":
-      discard stream.readChar()
 
-      if readingSpaces == false:
-        readingSpaces = true
-        program.add(buf)
-        buf = ""
+    if current.kind == Initial:
 
-    else:
-      readingSpaces = false
-      buf.add(stream.readChar())
+      if stream.peekChar() in " \n":
+        discard stream.readChar()
+
+      elif stream.peekChar.isDigit() or stream.peekChar() == '-':
+        current.kind = Number
+        current.buf.add(stream.readChar())
+
+      else:
+        current.kind = Name
+        current.buf.add(stream.readChar())
+
+    elif current.kind == Name:
+      if stream.peekChar() in " \n":
+        discard stream.readChar()
+        program.add(Cell(kind: Name, name: current.buf))
+        current = Token(kind: Initial, buf: "", wip: true)
+
+      else:
+        current.buf.add(stream.readChar())
+
+    elif current.kind == Number:
+      if stream.peekChar() in " \n":
+        discard stream.readChar()
+        program.add(Cell(kind: Number, number: parseFloat(current.buf)))
+        current = Token(kind: Initial, buf: "", wip: true)
+
+      elif stream.peekChar().isDigit():
+        current.buf.add(stream.readChar())
+
+      elif '.' notin current.buf and stream.peekChar() == '.':
+        current.buf.add(stream.readChar())
+
+      else:
+        current.kind = Name
+        current.buf.add(stream.readChar())
 
   program
 
