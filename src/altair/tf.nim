@@ -3,8 +3,8 @@ import strutils
 
 
 type
-    Name, Num, Builtin
   Kind* = enum
+    Name, Number, Builtin, Initial
 
   Cell* = ref object
     kind*: Kind
@@ -18,7 +18,7 @@ type
     data*: Cell
 
   VM* = ref object
-    program*: seq[string]
+    program*: seq[Cell]
     ip*: int
     dict*: Dict
     dstack*: seq[Cell]
@@ -67,15 +67,22 @@ proc findWord*(vm: VM, name: string): Cell =
 
 proc interpret*(vm: VM) =
   while vm.ip >= 0 and vm.ip < vm.program.len:
-    var
-      name = vm.program[vm.ip]
-      cell = vm.findWord(name)
-
-    if cell == nil:
-      raise newException(Exception, "unknown word: `$1`" % [name])
+    var cell = vm.program[vm.ip]
 
     if cell.kind == Builtin:
+      # this case may not occur
+      echo "program token $1 is :builtin" % [cell.repr]
       cell.builtin(vm)
+
+    elif cell.kind == Name:
+      var word = vm.findWord(cell.name)
+      if word == nil:
+        raise newException(Exception, "unknown word: `$1`" % [cell.name])
+      elif word.kind != Builtin:
+        raise newException(Exception, "it's not a builtin: `$1`" % [cell.name])
+      else:
+        word.builtin(vm)
+
     else:
       vm.dstack.add(cell)
 
