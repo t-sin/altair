@@ -9,7 +9,7 @@ type
     stream*: PStream
     mi*: MasterInfo
     rootUG*: UG
-    events*: seq[Seq]
+    events*: seq[EV]
 
 proc paCallback(
         inBuf, outBuf: pointer, framesPerBuf: culong,
@@ -23,7 +23,7 @@ proc paCallback(
 
   for i in 0..<framesPerBuf.int:
     for ev in soundsystem.events:
-      procSeq(ev, soundsystem.mi)
+      procEV(ev, soundsystem.mi)
 
     outBuf[i] = procUG(soundsystem.rootUG, soundsystem.mi)
 
@@ -33,7 +33,7 @@ proc paCallback(
   scrContinue.cint
 
 
-proc start*(ug: UG, ev: seq[Seq]): SoundSystem =
+proc start*(ug: UG, ev: seq[EV]): SoundSystem =
   var
     stream: PStream
     mi = MasterInfo(sampleRate: 44100)

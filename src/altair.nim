@@ -19,4 +19,4 @@ var
   mul = Mul(sources: @[env.UG, rnd.UG])
   mix2 = Mix(sources: @[mul.UG], amp: 0.2)
 
-ss.stop(ss.start(mix2, @[rhythm]))
+ss.stop(ss.start(mix2, @[rhythm.EV]))
