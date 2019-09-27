@@ -50,6 +50,39 @@ proc vmPrintStack(vm: VM) =
       stdout.write " "
   echo "]"
 
+proc vmSwap(vm: VM) =
+  var
+    a = vm.dstack.pop()
+    b = vm.dstack.pop()
+  vm.dstack.add(a)
+  vm.dstack.add(b)
+
+proc vmDuplicate(vm: VM) =
+  var
+    a = vm.dstack.pop()
+  vm.dstack.add(a)
+  vm.dstack.add(a)
+
+proc vmOver(vm: VM) =
+  var
+    a = vm.dstack.pop()
+    b = vm.dstack.pop()
+  vm.dstack.add(b)
+  vm.dstack.add(a)
+  vm.dstack.add(b)
+
+proc vmRotate(vm: VM) =
+  var
+    a = vm.dstack.pop()
+    b = vm.dstack.pop()
+    c = vm.dstack.pop()
+  vm.dstack.add(a)
+  vm.dstack.add(b)
+  vm.dstack.add(c)
+
+proc vmDrop(vm: VM) =
+  discard vm.dstack.pop()
+
 proc vmAdd(vm: VM) =
   var
     a = vm.dstack.pop()
@@ -216,6 +249,12 @@ proc parseProgram*(stream: Stream): seq[Cell] =
 
 proc initVM*(vm: VM) =
   vm.addWord(".s", Cell(kind: Builtin, builtin: vmPrintStack))
+  vm.addWord("swap", Cell(kind: Builtin, builtin: vmSwap))
+  vm.addWord("dup", Cell(kind: Builtin, builtin: vmDuplicate))
+  vm.addWord("over", Cell(kind: Builtin, builtin: vmOver))
+  vm.addWord("rot", Cell(kind: Builtin, builtin: vmRotate))
+  vm.addWord("drop", Cell(kind: Builtin, builtin: vmDrop))
+
   vm.addWord("+", Cell(kind: Builtin, builtin: vmAdd))
   vm.addWord("-", Cell(kind: Builtin, builtin: vmSub))
   vm.addWord("*", Cell(kind: Builtin, builtin: vmMul))
