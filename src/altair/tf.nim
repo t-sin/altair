@@ -132,10 +132,24 @@ proc vmMod(vm: VM) =
 proc vmExecute(vm: VM) =
   var a = vm.dstack.pop()
   if a.kind != ExList:
-    raise newException(Exception, "$1 is not a executable list" % [a.builtin.addr.repr])
+    raise newException(Exception, "$1 is not a executable list" % [a.kind.repr])
   vm.cstack.add(IP(ip: vm.ip, program: vm.program))
   vm.ip = -1
   vm.program = a.list
+
+proc vmIfElse(vm: VM) =
+  var
+    elseExlist = vm.dstack.pop()
+    thenExlist = vm.dstack.pop()
+    cond = vm.dstack.pop()
+  if cond.kind == Number and cond.number == 0.0:
+    vm.dstack.add(elseExlist)
+    vm.ip += 1
+    vm.vmExecute()
+  else:
+    vm.ip += 1
+    vm.dstack.add(thenExlist)
+    vm.vmExecute()
 
 proc makeVM*(): VM =
   var
@@ -314,6 +328,7 @@ proc initVM*(vm: VM) =
   vm.addWord("drop", Cell(kind: Builtin, builtin: vmDrop))
 
   vm.addWord("exec", Cell(kind: Builtin, builtin: vmExecute))
+  vm.addWord("ifelse", Cell(kind: Builtin, builtin: vmIfElse))
 
   vm.addWord("+", Cell(kind: Builtin, builtin: vmAdd))
   vm.addWord("-", Cell(kind: Builtin, builtin: vmSub))
