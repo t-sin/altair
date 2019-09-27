@@ -4,12 +4,13 @@ import strutils
 
 type
   Kind* = enum
-    Name, Number, Builtin, Initial
+    Name, Number, List, Builtin, Initial
 
   Cell* = ref object
     kind*: Kind
     name*: string
     number*: float32
+    list*: seq[Cell]
     builtin*: proc (vm: VM)
 
   Dict* = ref object
@@ -29,6 +30,15 @@ proc reprCell*(cell: Cell): string =
     str = cell.name
   elif cell.kind == Number:
     str = cell.number.repr
+  elif cell.kind == Builtin:
+    str = "proc;$1" % [cell.builtin.addr.repr]
+  elif cell.kind == List:
+    str.add('[')
+    for idx in 0..<cell.list.len:
+      str.add(reprCell(cell.list[idx]))
+      if idx != cell.list.len - 1:
+        str.add(" ")
+    str.add(']')
 
   "<$1:$2>" % [cell.kind.repr, str]
 
