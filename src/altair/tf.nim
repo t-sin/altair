@@ -18,11 +18,16 @@ type
     name*: string
     data*: Cell
 
+  IP = ref object
+    ip: int
+    program: seq[Cell]
+
   VM* = ref object
     program*: seq[Cell]
     ip*: int
     dict*: Dict
     dstack*: seq[Cell]
+    cstack*: seq[IP]
 
 proc reprCell*(cell: Cell): string =
   var str: string
@@ -120,6 +125,14 @@ proc vmMod(vm: VM) =
     b = vm.dstack.pop()
   vm.dstack.add(Cell(kind: Number, number: (b.number.int64 mod a.number.int64).float32))
 
+proc vmExecute(vm: VM) =
+  var a = vm.dstack.pop()
+  if a.kind != ExList:
+    raise newException(Exception, "$1 is not a executable list" % [a.builtin.addr.repr])
+  vm.cstack.add(IP(ip: vm.ip, program: vm.program))
+  vm.ip = -1
+  vm.program = a.list
+
 proc makeVM*(): VM =
   var
     dict = Dict(prev: nil, name: "<tf/nil>", data: nil)
@@ -146,7 +159,17 @@ proc findWord*(vm: VM, name: string): Cell =
     dict = dict.prev
 
 proc interpret*(vm: VM) =
-  while vm.ip >= 0 and vm.ip < vm.program.len:
+  while true:
+    if vm.ip < 0 or vm.ip >= vm.program.len:
+      if vm.cstack.len() == 0:
+        break
+      else:
+        var ip = vm.cstack.pop()
+        vm.ip = ip.ip
+        vm.program = ip.program
+        vm.ip += 1
+        continue
+
     var cell = vm.program[vm.ip]
 
     if cell.kind == Builtin:
@@ -286,6 +309,8 @@ proc initVM*(vm: VM) =
   vm.addWord("over", Cell(kind: Builtin, builtin: vmOver))
   vm.addWord("rot", Cell(kind: Builtin, builtin: vmRotate))
   vm.addWord("drop", Cell(kind: Builtin, builtin: vmDrop))
+
+  vm.addWord("exec", Cell(kind: Builtin, builtin: vmExecute))
 
   vm.addWord("+", Cell(kind: Builtin, builtin: vmAdd))
   vm.addWord("-", Cell(kind: Builtin, builtin: vmSub))

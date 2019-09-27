@@ -40,7 +40,7 @@ vm.initVM()
 vm.addWord("hoge", Cell(kind: Number, number: 42.0))
 
 var
-  program = "{ .s .s } .s"
+  program = "{ .s 1 .s 2 .s } .s exec .s"
   stream = newStringStream(program)
 
 echo program
