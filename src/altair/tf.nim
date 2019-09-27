@@ -56,6 +56,30 @@ proc vmAdd(vm: VM) =
     b = vm.dstack.pop()
   vm.dstack.add(Cell(kind: Number, number: b.number + a.number))
 
+proc vmSub(vm: VM) =
+  var
+    a = vm.dstack.pop()
+    b = vm.dstack.pop()
+  vm.dstack.add(Cell(kind: Number, number: b.number - a.number))
+
+proc vmMul(vm: VM) =
+  var
+    a = vm.dstack.pop()
+    b = vm.dstack.pop()
+  vm.dstack.add(Cell(kind: Number, number: b.number * a.number))
+
+proc vmDiv(vm: VM) =
+  var
+    a = vm.dstack.pop()
+    b = vm.dstack.pop()
+  vm.dstack.add(Cell(kind: Number, number: b.number / a.number))
+
+proc vmMod(vm: VM) =
+  var
+    a = vm.dstack.pop()
+    b = vm.dstack.pop()
+  vm.dstack.add(Cell(kind: Number, number: (b.number.int64 mod a.number.int64).float32))
+
 proc makeVM*(): VM =
   var
     dict = Dict(prev: nil, name: "<tf/nil>", data: nil)
@@ -193,3 +217,7 @@ proc parseProgram*(stream: Stream): seq[Cell] =
 proc initVM*(vm: VM) =
   vm.addWord(".s", Cell(kind: Builtin, builtin: vmPrintStack))
   vm.addWord("+", Cell(kind: Builtin, builtin: vmAdd))
+  vm.addWord("-", Cell(kind: Builtin, builtin: vmSub))
+  vm.addWord("*", Cell(kind: Builtin, builtin: vmMul))
+  vm.addWord("/", Cell(kind: Builtin, builtin: vmDiv))
+  vm.addWord("%", Cell(kind: Builtin, builtin: vmMod))
