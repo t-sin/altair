@@ -205,7 +205,7 @@ proc parseProgram*(stream: Stream): seq[Cell] =
       token.str.add(stream.readChar())
       stack.add(token)
 
-  while not stream.atEnd():
+  proc parse() =
     if stack.top().kind == Initial:
       dispatch()
 
@@ -221,7 +221,11 @@ proc parseProgram*(stream: Stream): seq[Cell] =
         dispatch()
 
     elif stack.top().kind == Name:
-      if stream.peekChar() in " \n":
+      if stream.atEnd():
+        var cell = Cell(kind: Name, name: stack.pop().str)
+        append(cell)
+
+      elif stream.peekChar() in " \n":
         discard stream.readChar()
         var cell = Cell(kind: Name, name: stack.pop().str)
         append(cell)
@@ -230,7 +234,11 @@ proc parseProgram*(stream: Stream): seq[Cell] =
         stack.top().str.add(stream.readChar())
 
     elif stack.top().kind == Number:
-      if stream.peekChar() in " \n":
+      if stream.atEnd():
+        var cell = Cell(kind: Number, number: parseFloat(stack.pop().str))
+        append(cell)
+
+      elif stream.peekChar() in " \n":
         discard stream.readChar()
         var cell = Cell(kind: Number, number: parseFloat(stack.pop().str))
         append(cell)
@@ -244,6 +252,10 @@ proc parseProgram*(stream: Stream): seq[Cell] =
       else:
         stack.top().str.add(stream.readChar())
 
+  while not stream.atEnd():
+    parse()
+
+  parse()
   program
 
 
