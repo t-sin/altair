@@ -39,9 +39,13 @@ var vm = makeVM()
 vm.initVM()
 vm.addWord("hoge", Cell(kind: Number, number: 42.0))
 
-var stream = newStringStream("""
--1.0 2 3 [ 1 2 3 4 ] .s
-""")
+var
+  program = """
+-1.0 2 3 [ 1 2 [ 11 22 ] 3 4 ] .s
+"""
+  stream = newStringStream(program)
 
+echo program
 vm.program = parseProgram(stream)
 vm.interpret()
+

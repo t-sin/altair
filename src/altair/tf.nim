@@ -40,7 +40,7 @@ proc reprCell*(cell: Cell): string =
         str.add(" ")
     str.add(']')
 
-  "<$1:$2>" % [cell.kind.repr, str]
+  str
 
 proc vmPrintStack(vm: VM) =
   stdout.write "["
