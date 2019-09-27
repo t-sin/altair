@@ -9,7 +9,7 @@ import altair/tf
 
 var
   vm = makeVM()
-  program = "0.1 { 111 . } { 222 . } ifelse .s"
+  program = "880 saw ug"
   stream = newStringStream(program)
 
 echo program
