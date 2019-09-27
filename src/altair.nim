@@ -40,7 +40,7 @@ vm.initVM()
 vm.addWord("hoge", Cell(kind: Number, number: 42.0))
 
 var stream = newStringStream("""
--1.0 2 3 .s
+-1.0 2 3 [ 1 2 3 4 ] .s
 """)
 
 vm.program = parseProgram(stream)

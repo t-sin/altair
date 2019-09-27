@@ -103,62 +103,71 @@ type
   Token = ref object
     kind: Kind
     buf: string
+    list: seq[Token]
     wip: bool
 
 proc parseProgram*(stream: Stream): seq[Cell] =
   var
     program: seq[Cell] = @[]
-    stack: seq[Token]
-    state = Initial
+    tstack: seq[Token] = @[]
+    sstack: seq[Kind] = @[Initial]
+
+  proc dispatch() =
+    if stream.peekChar() in " \n":
+      discard stream.readChar()
+
+    elif stream.peekChar.isDigit() or stream.peekChar() == '-':
+      sstack.add(Number)
+      tstack.add(Token(kind: Number, buf: ""))
+      tstack[tstack.len-1].buf.add(stream.readChar())
+
+    elif stream.peekChar() == '[':
+      discard stream.readChar()
+      sstack.add(List)
+      tstack.add(Token(kind: List, list: @[]))
+
+    else:
+      sstack.add(Name)
+      tstack.add(Token(kind: Name, buf: ""))
+      tstack[tstack.len-1].buf.add(stream.readChar())
 
   while not stream.atEnd():
-    echo state
-    echo stream.peekChar()
+    if sstack[sstack.len-1] == Initial:
+      dispatch()
 
-    if state == Initial:
-
-      if stream.peekChar() in " \n":
+    elif sstack[sstack.len-1] == List:
+      if stream.peekChar() == ']':
         discard stream.readChar()
-
-      elif stream.peekChar.isDigit() or stream.peekChar() == '-':
-        state = Number
-        stack.add(Token(kind: Number, buf: ""))
-        stack[stack.len-1].buf.add(stream.readChar())
-
-      elif stream.peekChar() == '[':
-        state = List
+        discard sstack.pop()
 
       else:
-        state = Name
-        stack.add(Token(kind: Name, buf: ""))
-        stack[stack.len-1].buf.add(stream.readChar())
+        discard stream.readChar()
+        #dispatch()
 
-    elif state == Name:
+    elif sstack[sstack.len-1] == Name:
       if stream.peekChar() in " \n":
         discard stream.readChar()
-        program.add(Cell(kind: Name, name: stack[stack.len-1].buf))
-        discard stack.pop()
+        program.add(Cell(kind: Name, name: tstack.pop().buf))
+        discard sstack.pop()
 
       else:
-        stack[stack.len-1].buf.add(stream.readChar())
+        tstack[tstack.len-1].buf.add(stream.readChar())
 
-    elif state == Number:
+    elif sstack[sstack.len-1] == Number:
       if stream.peekChar() in " \n":
         discard stream.readChar()
-        program.add(Cell(kind: Number, number: parseFloat(stack[stack.len-1].buf)))
-        discard stack.pop()
+        program.add(Cell(kind: Number, number: parseFloat(tstack.pop().buf)))
+        discard sstack.pop()
 
       elif stream.peekChar().isDigit():
-        stack[stack.len-1].buf.add(stream.readChar())
+        tstack[tstack.len-1].buf.add(stream.readChar())
 
-      elif '.' notin stack[stack.len-1].buf and stream.peekChar() == '.':
-        stack[stack.len-1].buf.add(stream.readChar())
+      elif '.' notin tstack[tstack.len-1].buf and stream.peekChar() == '.':
+        tstack[tstack.len-1].buf.add(stream.readChar())
 
       else:
-        state = Name
-        stack[stack.len-1].buf.add(stream.readChar())
-
-  echo "last!!!!"
+        sstack.add(Name)
+        tstack[tstack.len-1].buf.add(stream.readChar())
 
   program
 
