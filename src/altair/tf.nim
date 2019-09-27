@@ -62,6 +62,10 @@ proc vmPrintStack(vm: VM) =
       stdout.write " "
   echo "]"
 
+proc vmPrint(vm: VM) =
+  var a = vm.dstack.pop()
+  echo reprCell(a)
+
 proc vmSwap(vm: VM) =
   var
     a = vm.dstack.pop()
@@ -303,7 +307,6 @@ proc parseProgram*(stream: Stream): seq[Cell] =
 
 
 proc initVM*(vm: VM) =
-  vm.addWord(".s", Cell(kind: Builtin, builtin: vmPrintStack))
   vm.addWord("swap", Cell(kind: Builtin, builtin: vmSwap))
   vm.addWord("dup", Cell(kind: Builtin, builtin: vmDuplicate))
   vm.addWord("over", Cell(kind: Builtin, builtin: vmOver))
@@ -317,3 +320,6 @@ proc initVM*(vm: VM) =
   vm.addWord("*", Cell(kind: Builtin, builtin: vmMul))
   vm.addWord("/", Cell(kind: Builtin, builtin: vmDiv))
   vm.addWord("%", Cell(kind: Builtin, builtin: vmMod))
+
+  vm.addWord(".", Cell(kind: Builtin, builtin: vmPrint))
+  vm.addWord(".s", Cell(kind: Builtin, builtin: vmPrintStack))
