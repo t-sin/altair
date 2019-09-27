@@ -50,6 +50,12 @@ proc vmPrintStack(vm: VM) =
       stdout.write " "
   echo "]"
 
+proc vmAdd(vm: VM) =
+  var
+    a = vm.dstack.pop()
+    b = vm.dstack.pop()
+  vm.dstack.add(Cell(kind: Number, number: b.number + a.number))
+
 proc makeVM*(): VM =
   var
     dict = Dict(prev: nil, name: "<tf/nil>", data: nil)
@@ -186,3 +192,4 @@ proc parseProgram*(stream: Stream): seq[Cell] =
 
 proc initVM*(vm: VM) =
   vm.addWord(".s", Cell(kind: Builtin, builtin: vmPrintStack))
+  vm.addWord("+", Cell(kind: Builtin, builtin: vmAdd))
