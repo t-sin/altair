@@ -1,15 +1,18 @@
 import streams
 import strutils
 
+import ug
+import ev
 
 type
   Kind* = enum
-    Name, Number, List, ExList, Builtin, Initial
+    Name, Number, UGen, List, ExList, Builtin, Initial
 
   Cell* = ref object
     kind*: Kind
     name*: string
     number*: float32
+    ug*: UG
     list*: seq[Cell]
     builtin*: proc (vm: VM)
 
@@ -28,6 +31,8 @@ type
     dict*: Dict
     dstack*: seq[Cell]
     cstack*: seq[IP]
+    ug*: UG
+    ev*: seq[EV]
 
 proc reprCell*(cell: Cell): string =
   var str: string
@@ -54,6 +59,8 @@ proc reprCell*(cell: Cell): string =
 
   str
 
+## I/O words
+
 proc vmPrintStack(vm: VM) =
   stdout.write "["
   for idx in 0..<vm.dstack.len:
@@ -65,6 +72,8 @@ proc vmPrintStack(vm: VM) =
 proc vmPrint(vm: VM) =
   var a = vm.dstack.pop()
   echo reprCell(a)
+
+## Stack manupilation words
 
 proc vmSwap(vm: VM) =
   var
@@ -99,6 +108,8 @@ proc vmRotate(vm: VM) =
 proc vmDrop(vm: VM) =
   discard vm.dstack.pop()
 
+## Arithmatic words
+
 proc vmAdd(vm: VM) =
   var
     a = vm.dstack.pop()
@@ -129,6 +140,8 @@ proc vmMod(vm: VM) =
     b = vm.dstack.pop()
   vm.dstack.add(Cell(kind: Number, number: (b.number.int64 mod a.number.int64).float32))
 
+## Runtime words
+
 proc vmExecute(vm: VM) =
   var a = vm.dstack.pop()
   if a.kind != ExList:
@@ -150,6 +163,28 @@ proc vmIfElse(vm: VM) =
     vm.ip += 1
     vm.dstack.add(thenExlist)
     vm.vmExecute()
+
+## Unit generator words
+
+proc vmUgSaw(vm: VM) =
+  var
+    freq = vm.dstack.pop()
+    saw = Saw(freq: freq.number)
+    cell = Cell(kind: UGen, ug: saw.UG)
+  vm.dstack.add(cell)
+
+proc vmUgRnd(vm: VM) =
+  var
+    freq = vm.dstack.pop()
+    rnd = Rnd(freq: freq.number)
+    cell = Cell(kind: UGen, ug: rnd.UG)
+  vm.dstack.add(cell)
+
+proc vmSetUg(vm: VM) =
+  var
+    ug = vm.dstack.pop()
+  vm.ug = ug.ug
+
 
 proc makeVM*(): VM =
   var
@@ -321,6 +356,9 @@ proc parseProgram*(stream: Stream): seq[Cell] =
 
 
 proc initVM*(vm: VM) =
+  vm.ug = Mix(sources: @[Saw(phase: 0, freq: 440).UG], amp: 0.2)
+  vm.ev = @[]
+
   vm.addWord("swap", Cell(kind: Builtin, builtin: vmSwap))
   vm.addWord("dup", Cell(kind: Builtin, builtin: vmDuplicate))
   vm.addWord("over", Cell(kind: Builtin, builtin: vmOver))
@@ -338,3 +376,8 @@ proc initVM*(vm: VM) =
 
   vm.addWord(".", Cell(kind: Builtin, builtin: vmPrint))
   vm.addWord(".s", Cell(kind: Builtin, builtin: vmPrintStack))
+
+  vm.addWord("saw", Cell(kind: Builtin, builtin: vmUgSaw))
+  vm.addWord("rnd", Cell(kind: Builtin, builtin: vmUgRnd))
+
+  vm.addWord("ug",  Cell(kind: Builtin, builtin: vmSetUg))
