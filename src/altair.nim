@@ -8,18 +8,14 @@ import altair/tf
 
 
 var
-  saw1 = Saw(phase: 0, freq: 440)
-  saw2 = Saw(phase: 0, freq: 445)
-  rnd = Rnd(phase: 0, freq: 0)
+  vm = makeVM()
+  program = "0.1 { 111 . } { 222 . } ifelse .s"
+  stream = newStringStream(program)
 
-var
-  env = Env(adsr: Release, eplaced: 0, a: 0, d: 0.04, s: 0.1, r: 0.2)
-  rhythm = Seq(env: env, osc: rnd.Osc, pat: len_to_pos(120, @[2,-1,1,1,1,1,1,2,2,2,2]))
-
-var
-  mix1 = Mix(sources: @[saw1.UG, saw2.UG], amp: 1)
-  mul = Mul(sources: @[env.UG, rnd.UG])
-  mix2 = Mix(sources: @[mul.UG], amp: 0.2)
+echo program
+vm.initVM()
+vm.program = parseProgram(stream)
+vm.interpret()
 
 
 proc handleCtrlC() {.noconv.} =
@@ -29,20 +25,9 @@ proc handleCtrlC() {.noconv.} =
 setControlCHook(handleCtrlC)
 
 try:
-  synthesize(mix2, @[rhythm.EV])
+  synthesize(vm.ug, vm.ev)
 
 except Exception:
   quit(0)
 
 
-var vm = makeVM()
-vm.initVM()
-vm.addWord("hoge", Cell(kind: Number, number: 42.0))
-
-var
-  program = "0.1 { 111 . } { 222 . } ifelse .s"
-  stream = newStringStream(program)
-
-echo program
-vm.program = parseProgram(stream)
-vm.interpret()
