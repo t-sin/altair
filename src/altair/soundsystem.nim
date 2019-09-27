@@ -34,6 +34,8 @@ proc paCallback(
 
   for ev in soundsystem.events:
     completed = completed and procCompleted(ev)
+  if soundsystem.events.len == 0:
+    completed = false
   soundsystem.playing = not completed
 
   if completed:
