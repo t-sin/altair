@@ -109,47 +109,56 @@ proc parseProgram*(stream: Stream): seq[Cell] =
   var
     program: seq[Cell] = @[]
     stack: seq[Token]
-    current = Token(kind: Initial, buf: "", wip: true)
+    state = Initial
 
   while not stream.atEnd():
+    echo state
+    echo stream.peekChar()
 
-    if current.kind == Initial:
+    if state == Initial:
 
       if stream.peekChar() in " \n":
         discard stream.readChar()
 
       elif stream.peekChar.isDigit() or stream.peekChar() == '-':
-        current.kind = Number
-        current.buf.add(stream.readChar())
+        state = Number
+        stack.add(Token(kind: Number, buf: ""))
+        stack[stack.len-1].buf.add(stream.readChar())
+
+      elif stream.peekChar() == '[':
+        state = List
 
       else:
-        current.kind = Name
-        current.buf.add(stream.readChar())
+        state = Name
+        stack.add(Token(kind: Name, buf: ""))
+        stack[stack.len-1].buf.add(stream.readChar())
 
-    elif current.kind == Name:
+    elif state == Name:
       if stream.peekChar() in " \n":
         discard stream.readChar()
-        program.add(Cell(kind: Name, name: current.buf))
-        current = Token(kind: Initial, buf: "", wip: true)
+        program.add(Cell(kind: Name, name: stack[stack.len-1].buf))
+        discard stack.pop()
 
       else:
-        current.buf.add(stream.readChar())
+        stack[stack.len-1].buf.add(stream.readChar())
 
-    elif current.kind == Number:
+    elif state == Number:
       if stream.peekChar() in " \n":
         discard stream.readChar()
-        program.add(Cell(kind: Number, number: parseFloat(current.buf)))
-        current = Token(kind: Initial, buf: "", wip: true)
+        program.add(Cell(kind: Number, number: parseFloat(stack[stack.len-1].buf)))
+        discard stack.pop()
 
       elif stream.peekChar().isDigit():
-        current.buf.add(stream.readChar())
+        stack[stack.len-1].buf.add(stream.readChar())
 
-      elif '.' notin current.buf and stream.peekChar() == '.':
-        current.buf.add(stream.readChar())
+      elif '.' notin stack[stack.len-1].buf and stream.peekChar() == '.':
+        stack[stack.len-1].buf.add(stream.readChar())
 
       else:
-        current.kind = Name
-        current.buf.add(stream.readChar())
+        state = Name
+        stack[stack.len-1].buf.add(stream.readChar())
+
+  echo "last!!!!"
 
   program
 
