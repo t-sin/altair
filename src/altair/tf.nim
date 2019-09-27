@@ -4,7 +4,7 @@ import strutils
 
 type
   Kind* = enum
-    Name, Number, List, Builtin, Initial
+    Name, Number, List, ExList, Builtin, Initial
 
   Cell* = ref object
     kind*: Kind
@@ -32,6 +32,13 @@ proc reprCell*(cell: Cell): string =
     str = cell.number.repr
   elif cell.kind == Builtin:
     str = "proc;$1" % [cell.builtin.addr.repr]
+  elif cell.kind == ExList:
+    str.add('{')
+    for idx in 0..<cell.list.len:
+      str.add(reprCell(cell.list[idx]))
+      if idx != cell.list.len - 1:
+        str.add(" ")
+    str.add('}')
   elif cell.kind == List:
     str.add('[')
     for idx in 0..<cell.list.len:
@@ -181,7 +188,7 @@ proc parseProgram*(stream: Stream): seq[Cell] =
     stack: seq[Token] = @[]
 
   proc append(cell: Cell) =
-    if stack.top().kind == List:
+    if stack.top().kind in [List, ExList]:
       stack.top().list.add(cell)
     else:
       program.add(cell)
@@ -200,6 +207,11 @@ proc parseProgram*(stream: Stream): seq[Cell] =
       var token = Token(kind: List, list: @[])
       stack.add(token)
 
+    elif stream.peekChar() == '{':
+      discard stream.readChar()
+      var token = Token(kind: ExList, list: @[])
+      stack.add(token)
+
     else:
       var token = Token(kind: Name, str: "")
       token.str.add(stream.readChar())
@@ -215,6 +227,14 @@ proc parseProgram*(stream: Stream): seq[Cell] =
         var
           token = stack.pop()
           cell = Cell(kind: List, list: token.list)
+        append(cell)
+
+    elif stack.top().kind == ExList:
+      if stream.peekChar() == '}':
+        discard stream.readChar()
+        var
+          token = stack.pop()
+          cell = Cell(kind: ExList, list: token.list)
         append(cell)
 
       else:
