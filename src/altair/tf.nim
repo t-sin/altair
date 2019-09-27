@@ -102,72 +102,84 @@ proc interpret*(vm: VM) =
 type
   Token = ref object
     kind: Kind
-    buf: string
-    list: seq[Token]
-    wip: bool
+    str: string
+    list: seq[Cell]
+
+proc top(stack: seq[Token]): Token =
+  if stack.len > 0:
+    stack[stack.len-1]
+  else:
+    Token(kind: Initial)
+
 
 proc parseProgram*(stream: Stream): seq[Cell] =
   var
     program: seq[Cell] = @[]
-    tstack: seq[Token] = @[]
-    sstack: seq[Kind] = @[Initial]
+    stack: seq[Token] = @[]
+
+  proc append(cell: Cell) =
+    if stack.top().kind == List:
+      stack.top().list.add(cell)
+    else:
+      program.add(cell)
 
   proc dispatch() =
     if stream.peekChar() in " \n":
       discard stream.readChar()
 
     elif stream.peekChar.isDigit() or stream.peekChar() == '-':
-      sstack.add(Number)
-      tstack.add(Token(kind: Number, buf: ""))
-      tstack[tstack.len-1].buf.add(stream.readChar())
+      var token = Token(kind: Number, str: "")
+      token.str.add(stream.readChar())
+      stack.add(token)
 
     elif stream.peekChar() == '[':
       discard stream.readChar()
-      sstack.add(List)
-      tstack.add(Token(kind: List, list: @[]))
+      var token = Token(kind: List, list: @[])
+      stack.add(token)
 
     else:
-      sstack.add(Name)
-      tstack.add(Token(kind: Name, buf: ""))
-      tstack[tstack.len-1].buf.add(stream.readChar())
+      var token = Token(kind: Name, str: "")
+      token.str.add(stream.readChar())
+      stack.add(token)
 
   while not stream.atEnd():
-    if sstack[sstack.len-1] == Initial:
+    if stack.top().kind == Initial:
       dispatch()
 
-    elif sstack[sstack.len-1] == List:
+    elif stack.top().kind == List:
       if stream.peekChar() == ']':
         discard stream.readChar()
-        discard sstack.pop()
+        var
+          token = stack.pop()
+          cell = Cell(kind: List, list: token.list)
+        append(cell)
 
       else:
-        discard stream.readChar()
-        #dispatch()
+        dispatch()
 
-    elif sstack[sstack.len-1] == Name:
+    elif stack.top().kind == Name:
       if stream.peekChar() in " \n":
         discard stream.readChar()
-        program.add(Cell(kind: Name, name: tstack.pop().buf))
-        discard sstack.pop()
+        var cell = Cell(kind: Name, name: stack.pop().str)
+        append(cell)
 
       else:
-        tstack[tstack.len-1].buf.add(stream.readChar())
+        stack.top().str.add(stream.readChar())
 
-    elif sstack[sstack.len-1] == Number:
+    elif stack.top().kind == Number:
       if stream.peekChar() in " \n":
         discard stream.readChar()
-        program.add(Cell(kind: Number, number: parseFloat(tstack.pop().buf)))
-        discard sstack.pop()
+        var cell = Cell(kind: Number, number: parseFloat(stack.pop().str))
+        append(cell)
 
       elif stream.peekChar().isDigit():
-        tstack[tstack.len-1].buf.add(stream.readChar())
+        stack.top().str.add(stream.readChar())
 
-      elif '.' notin tstack[tstack.len-1].buf and stream.peekChar() == '.':
-        tstack[tstack.len-1].buf.add(stream.readChar())
+      elif '.' notin stack.top().str and stream.peekChar() == '.':
+        stack.top().str.add(stream.readChar())
 
       else:
-        sstack.add(Name)
-        tstack[tstack.len-1].buf.add(stream.readChar())
+        stack.top().str.add(stream.readChar())
 
   program
 
