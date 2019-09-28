@@ -50,12 +50,12 @@ proc reprCell*(cell: Cell): string =
         str.add(" ")
     str.add('}')
   elif cell.kind == List:
-    str.add('[')
+    str.add('(')
     for idx in 0..<cell.list.len:
       str.add(reprCell(cell.list[idx]))
       if idx != cell.list.len - 1:
         str.add(" ")
-    str.add(']')
+    str.add(')')
 
   str
 
