@@ -60,7 +60,7 @@ method procUG*(ug: Rnd, mi: MasterInfo): Signal =
 
 type
   ADSR* = enum
-    Attack, Decay, Sustin, Release, None
+    None, Attack, Decay, Sustin, Release
   Env* = ref object of UG
     adsr*: ADSR
     eplaced*: uint64
