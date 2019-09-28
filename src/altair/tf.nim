@@ -1,3 +1,4 @@
+import sequtils
 import streams
 import strutils
 import typetraits
@@ -7,13 +8,19 @@ import ev
 
 type
   Kind* = enum
-    Name, Number, UGen, List, ExList, Builtin, Initial
+    Initial,
+    Name, Number, List, ExList,
+    UGen, Event, Envelope, Note,
+    Builtin,
 
   Cell* = ref object
     kind*: Kind
     name*: string
     number*: float32
     ug*: UG
+    env*: Env
+    ev*: EV
+    note*: Note
     list*: seq[Cell]
     builtin*: proc (vm: VM)
 
@@ -60,6 +67,12 @@ proc reprCell*(cell: Cell): string =
   elif cell.kind == UGen:
     ## repr for each UG
     str.add(cell.ug.type.name)
+  elif cell.kind == Note:
+    str.add(cell.note.repr)
+  elif cell.kind == Envelope:
+    str.add(cell.env.type.name)
+  elif cell.kind == Event:
+    str.add(cell.ev.type.name)
 
   str
 
@@ -122,10 +135,10 @@ proc vmMakeList(vm: VM) =
 
 proc vmAddList(vm: Vm) =
   var
-    list = vm.dstack.pop()
     a = vm.dstack.pop()
+    list = vm.dstack.pop()
   if list.kind != List:
-    raise newException(Exception, "$1 is not a list" % [list.kind.repr])
+    raise newException(Exception, "[append] $1 is not a list" % [list.kind.repr])
 
   list.list.add(a)
   vm.dstack.add(list)
@@ -167,7 +180,7 @@ proc vmMod(vm: VM) =
 proc vmExecute(vm: VM) =
   var a = vm.dstack.pop()
   if a.kind != ExList:
-    raise newException(Exception, "$1 is not a executable list" % [a.kind.repr])
+    raise newException(Exception, "[exec] $1 is not a executable list" % [a.kind.repr])
   vm.cstack.add(IP(ip: vm.ip, program: vm.program))
   vm.ip = -1
   vm.program = a.list
@@ -209,14 +222,16 @@ proc vmUgMix(vm: VM) =
     ugs: seq[UG] = @[]
 
   if amp.kind != Number:
-    raise newException(Exception, "amp `$1` is not a number" % [amp.kind.repr])
+    raise newException(Exception, "[mix] amp `$1` is not a number" % [amp.kind.repr])
   if sources.kind != List:
-    raise newException(Exception, "sources `$1` is not a list" % [sources.kind.repr])
+    raise newException(Exception, "[mix] sources `$1` is not a list" % [sources.kind.repr])
   for src in sources.list:
     if src.kind == UGen:
       ugs.add(src.ug)
+    elif src.kind == Envelope:
+      ugs.add(src.env)
     else:
-      raise newException(Exception, "all elements of sources are not UGen")
+      raise newException(Exception, "[mix] all elements of sources are not UGen")
 
   var
     mix = Mix(sources: ugs, amp: amp.number)
@@ -230,12 +245,14 @@ proc vmUgMul(vm: VM) =
     ugs: seq[UG] = @[]
 
   if sources.kind != List:
-    raise newException(Exception, "sources `$1` is not a list" % [sources.kind.repr])
+    raise newException(Exception, "[mul] sources `$1` is not a list" % [sources.kind.repr])
   for src in sources.list:
     if src.kind == UGen:
       ugs.add(src.ug)
+    elif src.kind == Envelope:
+      ugs.add(src.env)
     else:
-      raise newException(Exception, "all elements of sources are not UGen")
+      raise newException(Exception, "[mul] all elements of sources are not UGen")
 
   var
     mul = Mul(sources: ugs)
@@ -246,6 +263,53 @@ proc vmSetUg(vm: VM) =
   var
     ug = vm.dstack.pop()
   vm.ug = ug.ug
+
+## Event (sequencer) words
+
+proc vmMakeEnv(vm: VM) =
+  var
+    r = vm.dstack.pop()
+    s = vm.dstack.pop()
+    d = vm.dstack.pop()
+    a = vm.dstack.pop()
+
+  for v in [a, d, s, r]:
+    if v.kind != Number:
+      raise newException(Exception, "[adsr] all a, d, s, r are not number")
+
+  var
+    env = Env(adsr: None, eplaced: 0, a: a.number, d: d.number, s: s.number, r: r.number)
+  vm.dstack.add(Cell(kind: Envelope, env: env.Env))
+
+proc vmEvSeq(vm: VM) =
+  var
+    len = vm.dstack.pop()
+    env = vm.dstack.pop()
+    osc = vm.dstack.pop()
+
+  if osc.kind != UGen:
+    raise newException(Exception, "[seq] osc `$1` is not a ugen" % [osc.kind.repr])
+
+  if env.kind != Envelope:
+    raise newException(Exception, "[seq] env `$1` is not an envelope" % [env.kind.repr])
+
+  if len.kind != List:
+    raise newException(Exception, "[seq] len `$1` is not a list" % [len.kind.repr])
+
+  var
+    notes = len_to_pos(120, len.list.map(proc (c: Cell): int = c.number.int()))
+    sq = Seq(
+      osc: osc.ug.Osc,
+      env: env.env.Env,
+      pat: notes)
+    cell = Cell(kind: Event, ev: sq.EV)
+
+  vm.dstack.add(cell)
+
+proc vmSetEv(vm: VM) =
+  var
+    ev = vm.dstack.pop()
+  vm.ev = @[ev.ev]
 
 
 proc makeVM*(): VM =
@@ -428,11 +492,11 @@ proc parseProgram*(stream: Stream): seq[Cell] =
   while true:
     parse()
     if stream.atEnd():
-      parse()
       if stack.len == 1:
         break
       else:
         echo stack.repr()
+        echo program.repr()
         echo stack.len()
         raise newException(Exception, "unexpected EOF")
 
@@ -468,5 +532,9 @@ proc initVM*(vm: VM) =
   vm.addWord("rnd", Cell(kind: Builtin, builtin: vmUgRnd))
   vm.addWord("mix", Cell(kind: Builtin, builtin: vmUgMix))
   vm.addWord("mul", Cell(kind: Builtin, builtin: vmUgMul))
+  vm.addWord("adsr", Cell(kind: Builtin, builtin: vmMakeEnv))
 
   vm.addWord("ug",  Cell(kind: Builtin, builtin: vmSetUg))
+
+  vm.addWord("seq",  Cell(kind: Builtin, builtin: vmEvSeq))
+  vm.addWord("ev", Cell(kind: Builtin, builtin: vmSetEv))
