@@ -317,13 +317,13 @@ proc top(stack: seq[Token]): Token =
   if stack.len > 0:
     stack[stack.len-1]
   else:
-    Token(kind: Initial)
+    raise newException(Exception, "parsing stack is empty")
 
 
 proc parseProgram*(stream: Stream): seq[Cell] =
   var
     program: seq[Cell] = @[]
-    stack: seq[Token] = @[]
+    stack: seq[Token] = @[Token(kind: Initial)]
 
   proc append(cell: Cell) =
     if stack.top().kind in [List, ExList]:
@@ -355,13 +355,8 @@ proc parseProgram*(stream: Stream): seq[Cell] =
       token.str.add(stream.readChar())
       stack.add(token)
 
-  proc parse(): bool =
-    result = true
-
-    if stack.len == 0:
-      result = false
-
-    elif stack.top().kind == Initial:
+  proc parse() =
+    if stack.top().kind == Initial:
       dispatch()
 
     elif stack.top().kind == List:
@@ -430,8 +425,16 @@ proc parseProgram*(stream: Stream): seq[Cell] =
       else:
         stack.top().str.add(stream.readChar())
 
-  while parse():
-    discard
+  while true:
+    parse()
+    if stream.atEnd():
+      parse()
+      if stack.len == 1:
+        break
+      else:
+        echo stack.repr()
+        echo stack.len()
+        raise newException(Exception, "unexpected EOF")
 
   program
 

@@ -9,7 +9,7 @@ import altair/tf
 
 var
   vm = makeVM()
-  program = "440 saw () append 0.9 mix .s ug () .s ( .s ) .s"
+  program = "440 saw () append 0.2 mix ug"
   stream = newStringStream(program)
 
 echo program
@@ -29,5 +29,3 @@ try:
 
 except Exception:
   quit(0)
-
-
