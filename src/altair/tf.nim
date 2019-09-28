@@ -340,7 +340,7 @@ proc parseProgram*(stream: Stream): seq[Cell] =
       token.str.add(stream.readChar())
       stack.add(token)
 
-    elif stream.peekChar() == '[':
+    elif stream.peekChar() == '(':
       discard stream.readChar()
       var token = Token(kind: List, list: @[])
       stack.add(token)
@@ -355,20 +355,37 @@ proc parseProgram*(stream: Stream): seq[Cell] =
       token.str.add(stream.readChar())
       stack.add(token)
 
-  proc parse() =
+  proc parse(): bool =
+    result = true
+
     if stack.top().kind == Initial:
       dispatch()
 
     elif stack.top().kind == List:
-      if stream.peekChar() == ']':
+      if stream.atEnd():
+        raise newException(Exception, "unexpected EOF while parsing $1" % [stack.top().kind.repr])
+
+      elif stream.peekChar() in " \n":
+        discard stream.readChar()
+
+      elif stream.peekChar() == ')':
         discard stream.readChar()
         var
           token = stack.pop()
           cell = Cell(kind: List, list: token.list)
         append(cell)
 
+      else:
+        dispatch()
+
     elif stack.top().kind == ExList:
-      if stream.peekChar() == '}':
+      if stream.atEnd():
+        raise newException(Exception, "unexpected EOF while parsing $1" % [stack.top().kind.repr])
+
+      elif stream.peekChar() in " \n":
+        discard stream.readChar()
+
+      elif stream.peekChar() == '}':
         discard stream.readChar()
         var
           token = stack.pop()
@@ -410,10 +427,9 @@ proc parseProgram*(stream: Stream): seq[Cell] =
       else:
         stack.top().str.add(stream.readChar())
 
-  while not stream.atEnd():
-    parse()
+  while parse():
+    discard
 
-  parse()
   program
 
 
