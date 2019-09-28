@@ -12,7 +12,7 @@ var
   program = """
 0 rnd dup
 0 0.1 0 0 adsr dup rot swap
-( 3 3 3 3 )
+( 3 3 2 1 1 3 3 3 2 1 1 3 )
 seq
 ev
 () swap append swap append .s mul
