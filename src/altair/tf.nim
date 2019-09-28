@@ -108,6 +108,24 @@ proc vmRotate(vm: VM) =
 proc vmDrop(vm: VM) =
   discard vm.dstack.pop()
 
+## List mamupilation words
+
+proc vmMakeList(vm: VM) =
+  var
+    list:seq[Cell] = @[]
+    cell = Cell(kind: List, list: list)
+  vm.dstack.add(cell)
+
+proc vmAddList(vm: Vm) =
+  var
+    list = vm.dstack.pop()
+    a = vm.dstack.pop()
+  if list.kind != List:
+    raise newException(Exception, "$1 is not a list" % [list.kind.repr])
+
+  list.list.add(a)
+  vm.dstack.add(list)
+
 ## Arithmatic words
 
 proc vmAdd(vm: VM) =
@@ -404,6 +422,9 @@ proc initVM*(vm: VM) =
   vm.addWord("over", Cell(kind: Builtin, builtin: vmOver))
   vm.addWord("rot", Cell(kind: Builtin, builtin: vmRotate))
   vm.addWord("drop", Cell(kind: Builtin, builtin: vmDrop))
+
+  vm.addWord("()", Cell(kind: Builtin, builtin: vmMakeList))
+  vm.addWord("append", Cell(kind: Builtin, builtin: vmAddList))
 
   vm.addWord("exec", Cell(kind: Builtin, builtin: vmExecute))
   vm.addWord("ifelse", Cell(kind: Builtin, builtin: vmIfElse))
