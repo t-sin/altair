@@ -1,5 +1,6 @@
 import streams
 import strutils
+import typetraits
 
 import ug
 import ev
@@ -56,6 +57,9 @@ proc reprCell*(cell: Cell): string =
       if idx != cell.list.len - 1:
         str.add(" ")
     str.add(')')
+  elif cell.kind == UGen:
+    ## repr for each UG
+    str.add(cell.ug.type.name)
 
   str
 
