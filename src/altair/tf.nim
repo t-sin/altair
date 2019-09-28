@@ -358,7 +358,10 @@ proc parseProgram*(stream: Stream): seq[Cell] =
   proc parse(): bool =
     result = true
 
-    if stack.top().kind == Initial:
+    if stack.len == 0:
+      result = false
+
+    elif stack.top().kind == Initial:
       dispatch()
 
     elif stack.top().kind == List:
