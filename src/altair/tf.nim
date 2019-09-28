@@ -180,6 +180,46 @@ proc vmUgRnd(vm: VM) =
     cell = Cell(kind: UGen, ug: rnd.UG)
   vm.dstack.add(cell)
 
+proc vmUgMix(vm: VM) =
+  var
+    amp = vm.dstack.pop()
+    sources = vm.dstack.pop()
+    ugs: seq[UG] = @[]
+
+  if amp.kind != Number:
+    raise newException(Exception, "amp `$1` is not a number" % [amp.kind.repr])
+  if sources.kind != List:
+    raise newException(Exception, "sources `$1` is not a list" % [sources.kind.repr])
+  for src in sources.list:
+    if src.kind == UGen:
+      ugs.add(src.ug)
+    else:
+      raise newException(Exception, "all elements of sources are not UGen")
+
+  var
+    mix = Mix(sources: ugs, amp: amp.number)
+    cell = Cell(kind: UGen, ug: mix.UG)
+  vm.dstack.add(cell)
+
+proc vmUgMul(vm: VM) =
+  var
+    sources = vm.dstack.pop()
+    allUG = true
+    ugs: seq[UG] = @[]
+
+  if sources.kind != List:
+    raise newException(Exception, "sources `$1` is not a list" % [sources.kind.repr])
+  for src in sources.list:
+    if src.kind == UGen:
+      ugs.add(src.ug)
+    else:
+      raise newException(Exception, "all elements of sources are not UGen")
+
+  var
+    mul = Mul(sources: ugs)
+    cell = Cell(kind: UGen, ug: mul.UG)
+  vm.dstack.add(cell)
+
 proc vmSetUg(vm: VM) =
   var
     ug = vm.dstack.pop()
@@ -379,5 +419,7 @@ proc initVM*(vm: VM) =
 
   vm.addWord("saw", Cell(kind: Builtin, builtin: vmUgSaw))
   vm.addWord("rnd", Cell(kind: Builtin, builtin: vmUgRnd))
+  vm.addWord("mix", Cell(kind: Builtin, builtin: vmUgMix))
+  vm.addWord("mul", Cell(kind: Builtin, builtin: vmUgMul))
 
   vm.addWord("ug",  Cell(kind: Builtin, builtin: vmSetUg))
