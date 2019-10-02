@@ -2,28 +2,46 @@ import math
 import os
 import streams
 
+import altair/ug
 import altair/soundsystem
 import altair/tf
 
+echo """
+          _|    _|                _|
+  _|_|_|  _|  _|_|_|_|    _|_|_|      _|  _|_|
+_|    _|  _|    _|      _|    _|  _|  _|_|
+_|    _|  _|    _|      _|    _|  _|  _|
+  _|_|_|  _|      _|_|    _|_|_|  _|  _|
 
-if os.paramCount() <= 0:
+"""
+
+var
+  filename: string
+  stream: Stream
+  vm = makeVM()
+
+if "--help" in os.commandLineParams():
   echo """Usage:
-  altair TFORTHFILE
+  altair [TFORTHFILE]
 """
   quit(0)
 
-var
+vm.resetVM()
+vm.initVM()
+vm.ug = Mix(sources: @[Saw(phase: 0, freq: 440).UG], amp: 0.2)
+vm.ev = @[]
+
+if os.paramCount() >= 1:
   filename = $(os.commandLineParams()[0])
-  vm = makeVM()
   stream = newFileStream(filename, fmRead)
 
-if stream.isNil():
-  echo filename & " does not exists."
-  quit(0)
+  if stream.isNil():
+    echo filename & " does not exists."
+    quit(0)
 
-vm.initVM()
-vm.program = parseProgram(stream)
-vm.interpret()
+  vm.isREPL = false
+  vm.program = parseProgram(stream)
+  vm.interpret()
 
 proc handleCtrlC() {.noconv.} =
   echo "interrupted by user!"
@@ -31,8 +49,22 @@ proc handleCtrlC() {.noconv.} =
 
 setControlCHook(handleCtrlC)
 
-try:
-  synthesize(vm.ug, vm.ev)
+proc threadFn(vmPtr: pointer) {.thread.} =
+  var vm = cast[ptr VM](vmPtr)[]
+  synthesize(vm)
 
-except Exception:
-  quit(0)
+proc startSynth(vm: VM) =
+  var thread: Thread[pointer]
+  try:
+    createThread(thread, threadFn, cast[pointer](vm.unsafeAddr))
+    while vm.isREPL:
+      stdout.write "> "
+      var line = readLine(stdin) & "\n"
+      vm.resetVM()
+      vm.program = parseProgram(newStringStream(line))
+      vm.interpret()
+
+  except Exception:
+    quit(0)
+
+startSynth(vm)

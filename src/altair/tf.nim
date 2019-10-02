@@ -34,6 +34,7 @@ type
     program: seq[Cell]
 
   VM* = ref object
+    isREPL*: bool
     program*: seq[Cell]
     ip*: int
     dict*: Dict
@@ -315,7 +316,7 @@ proc vmSetEv(vm: VM) =
 proc makeVM*(): VM =
   var
     dict = Dict(prev: nil, name: "<tf/nil>", data: nil)
-    vm = VM(program: @[], ip: 0, dict: dict, dstack: @[])
+    vm = VM(program: @[], ip: 0, dict: dict, dstack: @[], isREPL: true)
 
   vm
 
@@ -503,10 +504,12 @@ proc parseProgram*(stream: Stream): seq[Cell] =
   program
 
 
-proc initVM*(vm: VM) =
-  vm.ug = Mix(sources: @[Saw(phase: 0, freq: 440).UG], amp: 0.2)
-  vm.ev = @[]
+proc resetVM*(vm: VM) =
+  vm.ip = 0
+  vm.dstack = @[]
+  vm.cstack = @[]
 
+proc initVM*(vm: VM) =
   vm.addWord("swap", Cell(kind: Builtin, builtin: vmSwap))
   vm.addWord("dup", Cell(kind: Builtin, builtin: vmDuplicate))
   vm.addWord("over", Cell(kind: Builtin, builtin: vmOver))
