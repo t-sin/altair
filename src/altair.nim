@@ -7,6 +7,9 @@ import altair/soundsystem
 import altair/tf
 
 echo """
+
+Programmable Synthesizer
+
           _|    _|                _|
   _|_|_|  _|  _|_|_|_|    _|_|_|      _|  _|_|
 _|    _|  _|    _|      _|    _|  _|  _|_|
