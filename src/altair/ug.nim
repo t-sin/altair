@@ -56,7 +56,7 @@ method procUG*(ug: Sin, mi: MasterInfo): Signal =
     v = sin(ph)
     s: Signal = (v, v)
 
-  ug.phase += ug.freq / mi.sampleRate / PI
+  ug.phase += ug.freq / (mi.sampleRate / (2 * PI))
   s
 
 method procUG*(ug: Rnd, mi: MasterInfo): Signal =
