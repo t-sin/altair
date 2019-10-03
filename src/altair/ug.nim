@@ -32,6 +32,7 @@ type
     phase*: float32
     freq*: float32
   Saw* = ref object of Osc
+  Sin* = ref object of Osc
   Rnd* = ref object of Osc
     v: float32
 
@@ -47,6 +48,15 @@ method procUG*(ug: Saw, mi: MasterInfo): Signal =
     s = (v, v)
 
   ug.phase += ug.freq / mi.sampleRate / 2
+  s
+
+method procUG*(ug: Sin, mi: MasterInfo): Signal =
+  var
+    ph = ug.phase mod (2 * PI).float32
+    v = sin(ph)
+    s: Signal = (v, v)
+
+  ug.phase += ug.freq / mi.sampleRate / PI
   s
 
 method procUG*(ug: Rnd, mi: MasterInfo): Signal =

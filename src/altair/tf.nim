@@ -209,6 +209,13 @@ proc vmUgSaw(vm: VM) =
     cell = Cell(kind: UGen, ug: saw.UG)
   vm.dstack.add(cell)
 
+proc vmUgSin(vm: VM) =
+  var
+    freq = vm.dstack.pop()
+    sin = Sin(freq: freq.number)
+    cell = Cell(kind: UGen, ug: sin.UG)
+  vm.dstack.add(cell)
+
 proc vmUgRnd(vm: VM) =
   var
     freq = vm.dstack.pop()
@@ -532,6 +539,7 @@ proc initVM*(vm: VM) =
   vm.addWord(".s", Cell(kind: Builtin, builtin: vmPrintStack))
 
   vm.addWord("saw", Cell(kind: Builtin, builtin: vmUgSaw))
+  vm.addWord("sin", Cell(kind: Builtin, builtin: vmUgSin))
   vm.addWord("rnd", Cell(kind: Builtin, builtin: vmUgRnd))
   vm.addWord("mix", Cell(kind: Builtin, builtin: vmUgMix))
   vm.addWord("mul", Cell(kind: Builtin, builtin: vmUgMul))
