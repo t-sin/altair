@@ -480,12 +480,24 @@ proc parseProgram*(stream: Stream): seq[Cell] =
 
     elif stack.top().kind == Number:
       if stream.atEnd():
-        var cell = Cell(kind: Number, number: parseFloat(stack.pop().str))
+        var
+          token = stack.pop()
+          cell: Cell
+        if token.str == "-":
+          cell = Cell(kind: Name, name: token.str)
+        else:
+          cell = Cell(kind: Number, number: parseFloat(token.str))
         append(cell)
 
       elif stream.peekChar() in " \n":
         discard stream.readChar()
-        var cell = Cell(kind: Number, number: parseFloat(stack.pop().str))
+        var
+          token = stack.pop()
+          cell: Cell
+        if token.str == "-":
+          cell = Cell(kind: Name, name: token.str)
+        else:
+          cell = Cell(kind: Number, number: parseFloat(token.str))
         append(cell)
 
       elif stream.peekChar().isDigit():
