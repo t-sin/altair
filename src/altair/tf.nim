@@ -126,6 +126,12 @@ proc vmRotate(vm: VM) =
 proc vmDrop(vm: VM) =
   discard vm.dstack.pop()
 
+proc vmIsStackEmpty(vm: VM) =
+  if vm.dstack.len > 0:
+    vm.dstack.add(Cell(kind: Number, number: -1))
+  else:
+    vm.dstack.add(Cell(kind: Number, number: 0))
+
 ## List mamupilation words
 
 proc vmMakeList(vm: VM) =
@@ -534,6 +540,7 @@ proc initVM*(vm: VM) =
   vm.addWord("over", Cell(kind: Builtin, builtin: vmOver))
   vm.addWord("rot", Cell(kind: Builtin, builtin: vmRotate))
   vm.addWord("drop", Cell(kind: Builtin, builtin: vmDrop))
+  vm.addWord("empty?", Cell(kind: Builtin, builtin: vmIsStackEmpty))
 
   vm.addWord("()", Cell(kind: Builtin, builtin: vmMakeList))
   vm.addWord("append", Cell(kind: Builtin, builtin: vmAddList))
