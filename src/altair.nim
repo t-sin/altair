@@ -60,12 +60,15 @@ proc startSynth(vm: VM) =
   var thread: Thread[pointer]
   try:
     createThread(thread, threadFn, cast[pointer](vm.unsafeAddr))
-    while vm.isREPL:
-      stdout.write "> "
-      var line = readLine(stdin) & "\n"
-      vm.resetVM()
-      vm.program = parseProgram(newStringStream(line))
-      vm.interpret()
+    if vm.isREPL:
+      while true:
+        stdout.write "> "
+        var line = readLine(stdin) & "\n"
+        vm.resetVM()
+        vm.program = parseProgram(newStringStream(line))
+        vm.interpret()
+    else:
+      joinThread(thread)
 
   except Exception:
     quit(0)
