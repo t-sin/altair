@@ -70,7 +70,8 @@ proc startSynth(vm: VM) =
     else:
       joinThread(thread)
 
-  except Exception:
+  except Exception as e:
+    echo e.msg
     quit(0)
 
 startSynth(vm)
