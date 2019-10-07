@@ -5,9 +5,11 @@ Its behavior can be programmed with Forth-like (PostScript-like) language.
 
 Altair has these features below:
 
-- Basic oscillators (Saw)
+- Basic oscillators (Sine, Saw, Noise)
 - Step Sequencer
-- Parameter events for sound-synthesis modules
+  - without pitch (`rseq`)
+  - with pitch (`seq`)
+- TODO: Parameter events for sound-synthesis modules
 - These are programmable with small subset of PostScript
 
 ## Installation
