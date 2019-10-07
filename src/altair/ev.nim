@@ -6,6 +6,16 @@ import ug
 type
   Note* = tuple[freq: float32, sec: float, adsr: ADSR]
 
+proc key_to_freq(s: string, o: int): float =
+  var
+    pos = "a bc d ef g".find(s[0])
+  if s.len > 1:
+    if s[1] == '+':
+      pos += 1
+    elif s[1] == '-':
+      pos -= 1
+  440.0 * pow(2.0, (pos.float / 12.0 + o.float - 4.0))
+
 proc len_to_ratio*(n: int): float =
   (1.0 / 32.0) * pow(2.0, n.float)
 

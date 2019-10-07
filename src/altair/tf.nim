@@ -586,6 +586,6 @@ proc initVM*(vm: VM) =
 
   vm.addWord("ug",  Cell(kind: Builtin, builtin: vmSetUg))
 
+  vm.addWord("n", Cell(kind: Builtin, builtin: vmMakeNote))
   vm.addWord("seq",  Cell(kind: Builtin, builtin: vmEvSeq))
   vm.addWord("ev", Cell(kind: Builtin, builtin: vmSetEv))
-  vm.addWord("n", Cell(kind: Builtin, builtin: vmMakeNote))
