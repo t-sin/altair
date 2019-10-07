@@ -372,7 +372,9 @@ proc interpret*(vm: VM) =
 
     elif cell.kind == Name:
       var word = vm.findWord(cell.name)
-      if word == nil:
+      if cell.name.startsWith(':'):
+        vm.dstack.add(cell)
+      elif word == nil:
         raise newException(Exception, "unknown word: `$1`" % [cell.name])
       elif word.kind != Builtin:
         raise newException(Exception, "it's not a builtin: `$1`" % [cell.name])
