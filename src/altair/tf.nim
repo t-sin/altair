@@ -150,6 +150,14 @@ proc vmAddList(vm: Vm) =
   list.list.add(a)
   vm.dstack.add(list)
 
+proc vmClearList(vm: Vm) =
+  var
+    list = vm.dstack.pop()
+  if list.kind != List:
+    raise newException(Exception, "[clear] $1 is not a list" % [reprCell(list)])
+
+  list.list = @[]
+
 ## Arithmatic words
 
 proc vmAdd(vm: VM) =
@@ -608,6 +616,7 @@ proc initVM*(vm: VM) =
 
   vm.addWord("()", Cell(kind: Builtin, builtin: vmMakeList))
   vm.addWord("append", Cell(kind: Builtin, builtin: vmAddList))
+  vm.addWord("clear", Cell(kind: Builtin, builtin: vmClearList))
 
   vm.addWord("exec", Cell(kind: Builtin, builtin: vmExecute))
   vm.addWord("ifelse", Cell(kind: Builtin, builtin: vmIfElse))
