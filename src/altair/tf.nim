@@ -311,7 +311,7 @@ proc vmEvRSeq(vm: VM) = # rhythm machine (without pitch)
     raise newException(Exception, "[rseq] len `$1` is not a list" % [len.kind.repr])
 
   var
-    pat = notes_to_pos(120, len.list.map(proc (c: Cell): tuple[n: int, f: float] = (c.number.int(), 0.0)))
+    pat = notesToPos(120, len.list.map(proc (c: Cell): tuple[n: int, f: float] = (c.number.int(), 0.0)))
     sq = Seq(
       osc: osc.ug.Osc,
       env: env.env.Env,
@@ -323,7 +323,7 @@ proc vmEvRSeq(vm: VM) = # rhythm machine (without pitch)
 proc noteFromCell(c: Cell): tuple[n: int, f: float] =
   var
     s = c.list[0].name
-    freq = key_to_freq(s[1..<s.len], c.list[1].number.int)
+    freq = keyToFreq(s[1..<s.len], c.list[1].number.int)
     note = c.list[2].number.int
   (note, freq)
 
@@ -347,7 +347,7 @@ proc vmEvSeq(vm: VM) =
       raise newException(Exception, "[seq] `$1` in notes is not a note" % [reprCell(n)])
 
   var
-    pat = notes_to_pos(120, notes.list.map(noteFromCell))
+    pat = notesToPos(120, notes.list.map(noteFromCell))
     sq = Seq(
       osc: osc.ug.Osc,
       env: env.env.Env,
