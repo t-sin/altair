@@ -379,6 +379,7 @@ proc vmMakeNote(vm: VM) =
   list.list.add(note)
   vm.dstack.add(list)
 
+## procs for VM
 
 proc makeVM*(): VM =
   var
@@ -440,6 +441,7 @@ proc interpret*(vm: VM) =
 
     vm.ip += 1
 
+## parser
 
 type
   Token = ref object
@@ -584,6 +586,7 @@ proc parseProgram*(stream: Stream): seq[Cell] =
 
   program
 
+## for runtime environment
 
 proc resetVM*(vm: VM) =
   vm.ip = 0
