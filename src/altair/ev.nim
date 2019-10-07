@@ -6,38 +6,40 @@ import ug
 type
   Note* = tuple[freq: float32, sec: float, adsr: ADSR]
 
-proc key_to_freq(s: string, o: int): float =
+proc key_to_freq*(s: string, o: int): float =
   var
     pos = "a bc d ef g".find(s[0])
+    octave = o
+  if s[0] in "ab":
+    octave += 1
   if s.len > 1:
     if s[1] == '+':
       pos += 1
     elif s[1] == '-':
       pos -= 1
-  440.0 * pow(2.0, (pos.float / 12.0 + o.float - 4.0))
+  440.0 * pow(2.0, (pos.float / 12.0 + octave.float - 4.0))
 
-proc len_to_ratio*(n: int): float =
+proc note_to_ratio*(n: int): float =
   (1.0 / 32.0) * pow(2.0, n.float)
 
-proc len_to_pos*(bpm: float, len: seq[int]): seq[Note] =
+proc notes_to_pos*(bpm: float, notes: seq[tuple[n: int, f: float]]): seq[Note] =
   var
     sec = 0.0
     measure = bpm / 60.0
-    notes: seq[Note] = @[]
+    result: seq[Note] = @[]
 
-  for len in len:
-    if len < 0:
-      if notes[notes.len - 1].adsr != Release:
-        notes.add((0f32, sec, Release))
-      sec += measure * len_to_ratio(abs(len))
-
+  for note in notes:
+    if note.n < 0:
+      if result[result.len - 1].adsr != Release:
+        result.add((note.f.float32, sec, Release))
+      sec += measure * note_to_ratio(abs(note.n))
     else:
-      var len_sec = measure * len_to_ratio(len)
-      notes.add((0f32, sec, Attack))
-      notes.add((0f32, sec + len_sec, Release))
+      var len_sec = measure * note_to_ratio(note.n)
+      result.add((note.f.float32, sec, Attack))
+      result.add((note.f.float32, sec + len_sec, Release))
       sec += len_sec
 
-  notes
+  result
 
 
 type

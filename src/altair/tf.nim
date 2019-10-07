@@ -295,27 +295,63 @@ proc vmMakeEnv(vm: VM) =
     env = Env(adsr: None, eplaced: 0, a: a.number, d: d.number, s: s.number, r: r.number)
   vm.dstack.add(Cell(kind: Envelope, env: env.Env))
 
-proc vmEvSeq(vm: VM) =
+proc vmEvRSeq(vm: VM) = # rhythm machine (without pitch)
   var
     len = vm.dstack.pop()
     env = vm.dstack.pop()
     osc = vm.dstack.pop()
 
   if osc.kind != UGen:
-    raise newException(Exception, "[seq] osc `$1` is not a ugen" % [osc.kind.repr])
+    raise newException(Exception, "[rseq] osc `$1` is not a ugen" % [osc.kind.repr])
 
   if env.kind != Envelope:
-    raise newException(Exception, "[seq] env `$1` is not an envelope" % [env.kind.repr])
+    raise newException(Exception, "[rseq] env `$1` is not an envelope" % [env.kind.repr])
 
   if len.kind != List:
-    raise newException(Exception, "[seq] len `$1` is not a list" % [len.kind.repr])
+    raise newException(Exception, "[rseq] len `$1` is not a list" % [len.kind.repr])
 
   var
-    notes = len_to_pos(120, len.list.map(proc (c: Cell): int = c.number.int()))
+    pat = notes_to_pos(120, len.list.map(proc (c: Cell): tuple[n: int, f: float] = (c.number.int(), 0.0)))
     sq = Seq(
       osc: osc.ug.Osc,
       env: env.env.Env,
-      pat: notes)
+      pat: pat)
+    cell = Cell(kind: Event, ev: sq.EV)
+
+  vm.dstack.add(cell)
+
+proc noteFromCell(c: Cell): tuple[n: int, f: float] =
+  var
+    s = c.list[0].name
+    freq = key_to_freq(s[1..<s.len], c.list[1].number.int)
+    note = c.list[2].number.int
+  (note, freq)
+
+proc vmEvSeq(vm: VM) =
+  var
+    notes = vm.dstack.pop()
+    env = vm.dstack.pop()
+    osc = vm.dstack.pop()
+
+  if osc.kind != UGen:
+    raise newException(Exception, "[seq] osc `$1` is not a ugen" % [reprCell(osc)])
+
+  if env.kind != Envelope:
+    raise newException(Exception, "[seq] env `$1` is not an envelope" % [reprCell(env)])
+
+  if notes.kind != List:
+    raise newException(Exception, "[seq] notes `$1` is not a list" % [reprCell(notes)])
+
+  for n in notes.list:
+    if n.kind != Note:
+      raise newException(Exception, "[seq] `$1` in notes is not a note" % [reprCell(n)])
+
+  var
+    pat = notes_to_pos(120, notes.list.map(noteFromCell))
+    sq = Seq(
+      osc: osc.ug.Osc,
+      env: env.env.Env,
+      pat: pat)
     cell = Cell(kind: Event, ev: sq.EV)
 
   vm.dstack.add(cell)
@@ -587,5 +623,6 @@ proc initVM*(vm: VM) =
   vm.addWord("ug",  Cell(kind: Builtin, builtin: vmSetUg))
 
   vm.addWord("n", Cell(kind: Builtin, builtin: vmMakeNote))
+  vm.addWord("rseq",  Cell(kind: Builtin, builtin: vmEvRSeq))
   vm.addWord("seq",  Cell(kind: Builtin, builtin: vmEvSeq))
   vm.addWord("ev", Cell(kind: Builtin, builtin: vmSetEv))

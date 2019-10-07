@@ -3,7 +3,7 @@
 rot swap .s
 ( 3 2 2 2 1 0 0 -2 1 1
   3 2 2 2 1 0 0 -2 1 1 )
-seq .s
+rseq .s
 ev
 () swap append swap append .s mul
 ug
