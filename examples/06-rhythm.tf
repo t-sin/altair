@@ -12,7 +12,7 @@ rot swap .s
   3 2 2 2 1 0 0 -2 1 1 )
 
 % make rseq (rhythm sequencer) with oscillator, envelope and pattern
-rseq .s
+rseq () swap append .s
 
 % set global events
 ev

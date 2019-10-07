@@ -367,7 +367,18 @@ proc vmEvSeq(vm: VM) =
 proc vmSetEv(vm: VM) =
   var
     ev = vm.dstack.pop()
-  vm.ev = @[ev.ev]
+    evseq: seq[EV]
+
+  if ev.kind != List:
+    raise newException(Exception, "[ev] `$1` is not a list" % [reprCell(ev)])
+
+  for e in ev.list:
+    if e.kind != Event:
+      raise newException(Exception, "[ev] `$1` is not an event" % [reprCell(e)])
+    else:
+      evseq.add(e.ev)
+
+  vm.ev = evseq
 
 proc vmMakeNote(vm: VM) =
   var
