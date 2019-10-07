@@ -471,6 +471,11 @@ proc parseProgram*(stream: Stream): seq[Cell] =
     if stream.peekChar() in " \n":
       discard stream.readChar()
 
+    elif stream.peekChar() == '%':
+      while stream.peekChar() != '\n':
+        discard stream.readChar()
+      discard stream.readChar()
+
     elif stream.peekChar.isDigit() or stream.peekChar() == '-':
       var token = Token(kind: Number, str: "")
       token.str.add(stream.readChar())
