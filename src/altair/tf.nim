@@ -20,7 +20,6 @@ type
     ug*: UG
     env*: Env
     ev*: EV
-    note*: Note
     list*: seq[Cell]
     builtin*: proc (vm: VM)
 
@@ -69,7 +68,8 @@ proc reprCell*(cell: Cell): string =
     ## repr for each UG
     str.add(cell.ug.type.name)
   elif cell.kind == Note:
-    str.add(cell.note.repr)
+    str.add("%n$1:$2:$3" % [
+      $(cell.list[0].name), $(cell.list[1].number.int), $(cell.list[2].number.int)])
   elif cell.kind == Envelope:
     str.add(cell.env.type.name)
   elif cell.kind == Event:
@@ -325,6 +325,24 @@ proc vmSetEv(vm: VM) =
     ev = vm.dstack.pop()
   vm.ev = @[ev.ev]
 
+proc vmMakeNote(vm: VM) =
+  var
+    len = vm.dstack.pop()
+    oct = vm.dstack.pop()
+    key = vm.dstack.pop()
+    list = vm.dstack.pop()
+    note = Cell(kind: Note, list: @[key, oct, len])
+  if key.kind != Name:
+    raise newException(Exception, "[n] key `$1` is not a name" % [reprCell(key)])
+  if oct.kind != Number:
+    raise newException(Exception, "[n] osc `$1` is not a number" % [reprCell(oct)])
+  if len.kind != Number:
+    raise newException(Exception, "[n] len `$1` is not a number" % [reprCell(len)])
+  if list.kind != List:
+    raise newException(Exception, "[n] list `$1` is not a list" % [reprCell(list)])
+  list.list.add(note)
+  vm.dstack.add(list)
+
 
 proc makeVM*(): VM =
   var
@@ -570,3 +588,4 @@ proc initVM*(vm: VM) =
 
   vm.addWord("seq",  Cell(kind: Builtin, builtin: vmEvSeq))
   vm.addWord("ev", Cell(kind: Builtin, builtin: vmSetEv))
+  vm.addWord("n", Cell(kind: Builtin, builtin: vmMakeNote))
