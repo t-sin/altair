@@ -9,7 +9,7 @@ Altair has these features below:
 - Step Sequencer
   - without pitch (`rseq`)
   - with pitch (`seq`)
-- TODO: Parameter events for sound-synthesis modules
+- ~~Parameter events for sound-synthesis modules~~
 - These are programmable with small subset of PostScript
 
 ## Installation
@@ -26,9 +26,9 @@ so the binary `altair` will be created, execute it.
 
 ## Usage
 
-Because Altair require that its behavior is defined as *Tapir Forth* source code.
+Because Altair requires that its behavior is defined as *Tapir Forth* source code.
 To play with Altair, you should custum synthesizer behavior to write *.tf file.
-However, there is a sapmle file to try Altair (see <examples/>).
+However, there is a sapmle file to try Altair (see [examples/](examples/)).
 
 Type like this to run Altair:
 
