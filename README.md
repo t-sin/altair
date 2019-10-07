@@ -1,5 +1,9 @@
 # Altair - Little Programmable Synthesizer
 
+![Altair Logo](altair-logo.png)
+
+[For](https://twitter.com/tobuzoo7/status/1167349567202836480) [you](https://twitter.com/tobuzoo7/status/1168132005407514625).
+
 Altair is a little programmable synthesizer program.
 Its behavior can be programmed with Forth-like (PostScript-like) language.
 
