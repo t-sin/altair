@@ -65,15 +65,14 @@ proc reprCell*(cell: Cell): string =
         str.add(" ")
     str.add(')')
   elif cell.kind == UGen:
-    ## repr for each UG
-    str.add(cell.ug.type.name)
+    str.add("$1:$2" % [cell.ug.type.name, cell.ug.addr.ptr.repr.split('\n')[0]])
   elif cell.kind == Note:
     str.add("%n$1:$2:$3" % [
       $(cell.list[0].name), $(cell.list[1].number.int), $(cell.list[2].number.int)])
   elif cell.kind == Envelope:
-    str.add(cell.env.type.name)
+    str.add("$1:$2" % [cell.env.type.name, cell.env.addr.ptr.repr.split('\n')[0]])
   elif cell.kind == Event:
-    str.add(cell.ev.type.name)
+    str.add("$1:$2" % [cell.ev.type.name, cell.ev.addr.ptr.repr.split('\n')[0]])
 
   str
 
