@@ -29,7 +29,7 @@ proc notesToPos*(bpm: float, notes: seq[tuple[n: int, f: float]]): seq[Note] =
     result: seq[Note] = @[]
 
   for note in notes:
-    if note.n < 0:
+    if result.len > 0 and note.n < 0:
       if result[result.len - 1].adsr != Release:
         result.add((note.f.float32, sec, Release))
       sec += measure * noteToRatio(abs(note.n))
