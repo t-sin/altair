@@ -61,10 +61,10 @@ type
 
 method procEV*(ev: Seq, mi: MasterInfo) =
   while ev.idx < ev.pat.len and mi.sec >= ev.pat[ev.idx].sec:
-      ev.env.adsr = ev.pat[ev.idx].adsr
-      ev.env.eplaced = 0
-      ev.osc.freq = ev.pat[ev.idx].freq
-      ev.idx += 1
+    ev.env.adsr = ev.pat[ev.idx].adsr
+    ev.env.eplaced = 0
+    ev.osc.freq = ev.pat[ev.idx].freq
+    ev.idx += 1
 
 method procCompleted*(ev: Seq): bool =
   ev.idx >= ev.pat.len and ev.env.adsr == None
