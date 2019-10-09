@@ -1,6 +1,6 @@
 # Package
 
-version       = "1.0.0"
+version       = "1.0.1"
 author        = "t-sin"
 description   = "Little Synthesizer"
 license       = "GPL-3.0"
