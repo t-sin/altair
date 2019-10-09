@@ -10,8 +10,7 @@
 440 sin              % oscillator
 dup
 0.05 0.1 0.3 0.05 adsr  % envelope
-dup
-rot swap
+dup rot swap
 
 % sequence 1
 ()
@@ -82,7 +81,7 @@ swap over
 :c+ 3 4 n :e 3 4 n :a 2 4 n :e 3 4 n
 :f+ 3 4 n
 seq
-swap rot swap append
+rot swap append
 
 
 % %%
@@ -108,8 +107,7 @@ swap over
 
 :d 3 5 n
 seq
-
-swap rot swap append
+rot swap append
 
 
 % %%
@@ -120,13 +118,15 @@ ev
 
 % multiply each pair of oscillator and envelope
 () swap append swap append mul
-swap
+() swap append
+rot rot
 () swap append swap append mul
-rot
+append rot rot
 () swap append swap append mul
+append
 
 % mix three tracks
-() swap append swap append swap append 0.2 mix
+0.2 mix
 
 % set unit generators
 ug

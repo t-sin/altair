@@ -118,8 +118,8 @@ proc vmRotate(vm: VM) =
     a = vm.dstack.pop()
     b = vm.dstack.pop()
     c = vm.dstack.pop()
-  vm.dstack.add(a)
   vm.dstack.add(b)
+  vm.dstack.add(a)
   vm.dstack.add(c)
 
 proc vmDrop(vm: VM) =
