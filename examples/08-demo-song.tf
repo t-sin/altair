@@ -109,7 +109,7 @@ swap over
 :f+ 3 2 n :r 3 -2 n :g 3 2 n :r 3 -2 n :a 3 4 n :d 3 4 n :r 3 -4 n
 :a 3 2 n :r 3 -2 n :g 3 2 n :f+ 3 2 n :e 3 5 n :r 3 -4 n :r 3 -4 n
 
-:c 3 5 n
+:d 3 5 n
 seq
 
 swap rot swap append
