@@ -37,7 +37,7 @@ However, there is a sapmle file to try Altair (see [examples/](examples/)).
 Type like this to run Altair:
 
 ```
-altair ./examples/04-saw.tf
+altair ./examples/08-demo-song.tf
 ```
 
 ## Author

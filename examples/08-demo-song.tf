@@ -1,10 +1,7 @@
 % %%
 % %% Title: A Song for Altair
 % %% Author: t-sin
-% %% Status: WIP
 % %%
-
-% %% Why output sound are unstable pitch? WHY????
 
 
 % %%
