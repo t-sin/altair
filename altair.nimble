@@ -1,9 +1,9 @@
 # Package
 
-version       = "1.0.1"
+version       = "1.0.2"
 author        = "t-sin"
 description   = "Little Synthesizer"
-license       = "GPL-3.0"
+license       = "CC0"
 srcDir        = "src"
 bin           = @["altair"]
 
