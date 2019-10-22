@@ -49,7 +49,6 @@ method procUG*(ug: Saw, mi: MasterInfo): Signal =
     s = (v, v)
 
   ug.phase = ph + ph_diff
-  ug.phase += ug.phase - ph
   s
 
 method procUG*(ug: Sin, mi: MasterInfo): Signal =
@@ -60,7 +59,6 @@ method procUG*(ug: Sin, mi: MasterInfo): Signal =
     s: Signal = (v, v)
 
   ug.phase = ph + ph_diff
-  ug.phase += ug.phase - ph
   s
 
 method procUG*(ug: Rnd, mi: MasterInfo): Signal =
