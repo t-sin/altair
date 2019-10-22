@@ -14,43 +14,43 @@ dup rot swap
 
 % sequence 1
 ()
-:d 3 2 n :r 4 -2 n :a 3 2 n :r 4 -2 n :f+ 3 2 n :r 4 -2 n :b 3 2 n :r 4 -2 n
-:d 3 2 n :r 4 -2 n :a 3 2 n :r 4 -2 n :f+ 3 2 n :r 4 -2 n :b 3 2 n :r 4 -2 n
+:d 4 2 n :r 4 -2 n :a 4 2 n :r 4 -2 n :f+ 4 2 n :r 4 -2 n :b 4 2 n :r 4 -2 n
+:d 4 2 n :r 4 -2 n :a 4 2 n :r 4 -2 n :f+ 4 2 n :r 4 -2 n :b 4 2 n :r 4 -2 n
 
-:c 3 2 n :r 4 -2 n :g 3 2 n :r 4 -2 n :d 3 2 n :r 4 -2 n :b 3 2 n :r 4 -2 n
-:c 3 2 n :r 4 -2 n :g 3 2 n :r 4 -2 n :d 3 2 n :r 4 -2 n :b 3 2 n :r 4 -2 n
+:c 4 2 n :r 4 -2 n :g 4 2 n :r 4 -2 n :d 4 2 n :r 4 -2 n :b 4 2 n :r 4 -2 n
+:c 4 2 n :r 4 -2 n :g 4 2 n :r 4 -2 n :d 4 2 n :r 4 -2 n :b 4 2 n :r 4 -2 n
 
-:a+ 2 2 n :r 4 -2 n :d 3 2 n :r 4 -2 n :f 2 2 n :r 4 -2 n :a+ 3 2 n :r 4 -2 n
-:a+ 2 2 n :r 4 -2 n :d 3 2 n :r 4 -2 n :f 2 2 n :r 4 -2 n :a+ 3 2 n :r 4 -2 n
+:a+ 3 2 n :r 4 -2 n :d 4 2 n :r 4 -2 n :f 3 2 n :r 4 -2 n :a+ 4 2 n :r 4 -2 n
+:a+ 3 2 n :r 4 -2 n :d 4 2 n :r 4 -2 n :f 3 2 n :r 4 -2 n :a+ 4 2 n :r 4 -2 n
 
-:a 3 2 n :r 4 -2 n :a 2 2 n :r 4 -2 n :e 3 2 n :r 4 -2 n :a 2 2 n :r 4 -2 n
-:a 3 2 n :r 4 -2 n :g 3 2 n :r 4 -2 n :f+ 3 2 n :r 4 -2 n :e 3 2 n :r 4 -2 n
+:a 4 2 n :r 4 -2 n :a 3 2 n :r 4 -2 n :e 4 2 n :r 4 -2 n :a 3 2 n :r 4 -2 n
+:a 4 2 n :r 4 -2 n :g 4 2 n :r 4 -2 n :f+ 4 2 n :r 4 -2 n :e 4 2 n :r 4 -2 n
 
-:d 3 2 n :r 4 -2 n :a 3 2 n :r 4 -2 n :f+ 3 2 n :r 4 -2 n :b 3 2 n :r 4 -2 n
-:d 3 2 n :r 4 -2 n :a 3 2 n :r 4 -2 n :f+ 3 2 n :r 4 -2 n :b 3 2 n :r 4 -2 n
+:d 4 2 n :r 4 -2 n :a 4 2 n :r 4 -2 n :f+ 4 2 n :r 4 -2 n :b 4 2 n :r 4 -2 n
+:d 4 2 n :r 4 -2 n :a 4 2 n :r 4 -2 n :f+ 4 2 n :r 4 -2 n :b 4 2 n :r 4 -2 n
 
-:c 3 2 n :r 4 -2 n :g 3 2 n :r 4 -2 n :d 3 2 n :r 4 -2 n :b 3 2 n :r 4 -2 n
-:c 3 2 n :r 4 -2 n :g 3 2 n :r 4 -2 n :d 3 2 n :r 4 -2 n :b 3 2 n :r 4 -2 n
+:c 4 2 n :r 4 -2 n :g 4 2 n :r 4 -2 n :d 4 2 n :r 4 -2 n :b 4 2 n :r 4 -2 n
+:c 4 2 n :r 4 -2 n :g 4 2 n :r 4 -2 n :d 4 2 n :r 4 -2 n :b 4 2 n :r 4 -2 n
 
-:a+ 2 2 n :r 4 -2 n :d 3 2 n :r 4 -2 n :f 2 2 n :r 4 -2 n :a+ 3 2 n :r 4 -2 n
-:a+ 2 2 n :r 4 -2 n :d 3 2 n :r 4 -2 n :f 2 2 n :r 4 -2 n :a+ 3 2 n :r 4 -2 n
+:a+ 3 2 n :r 4 -2 n :d 4 2 n :r 4 -2 n :f 3 2 n :r 4 -2 n :a+ 4 2 n :r 4 -2 n
+:a+ 3 2 n :r 4 -2 n :d 4 2 n :r 4 -2 n :f 3 2 n :r 4 -2 n :a+ 4 2 n :r 4 -2 n
 
-:a 3 2 n :r 4 -2 n :a 2 2 n :r 4 -2 n :e 3 2 n :r 4 -2 n :a 2 2 n :r 4 -2 n
-:a 3 2 n :r 4 -2 n :g 3 2 n :r 4 -2 n :f+ 3 2 n :r 4 -2 n :e 3 2 n :r 4 -2 n
+:a 4 2 n :r 4 -2 n :a 3 2 n :r 4 -2 n :e 4 2 n :r 4 -2 n :a 3 2 n :r 4 -2 n
+:a 4 2 n :r 4 -2 n :g 4 2 n :r 4 -2 n :f+ 4 2 n :r 4 -2 n :e 4 2 n :r 4 -2 n
 
-:d 3 2 n :r 4 -2 n :a 3 2 n :r 4 -2 n :f+ 3 2 n :r 4 -2 n :b 3 2 n :r 4 -2 n
-:d 3 2 n :r 4 -2 n :a 3 2 n :r 4 -2 n :f+ 3 2 n :r 4 -2 n :b 3 2 n :r 4 -2 n
+:d 4 2 n :r 4 -2 n :a 4 2 n :r 4 -2 n :f+ 4 2 n :r 4 -2 n :b 4 2 n :r 4 -2 n
+:d 4 2 n :r 4 -2 n :a 4 2 n :r 4 -2 n :f+ 4 2 n :r 4 -2 n :b 4 2 n :r 4 -2 n
 
-:c 3 2 n :r 4 -2 n :g 3 2 n :r 4 -2 n :d 3 2 n :r 4 -2 n :b 3 2 n :r 4 -2 n
-:c 3 2 n :r 4 -2 n :g 3 2 n :r 4 -2 n :d 3 2 n :r 4 -2 n :b 3 2 n :r 4 -2 n
+:c 4 2 n :r 4 -2 n :g 4 2 n :r 4 -2 n :d 4 2 n :r 4 -2 n :b 4 2 n :r 4 -2 n
+:c 4 2 n :r 4 -2 n :g 4 2 n :r 4 -2 n :d 4 2 n :r 4 -2 n :b 4 2 n :r 4 -2 n
 
-:a+ 2 2 n :r 4 -2 n :d 3 2 n :r 4 -2 n :f 2 2 n :r 4 -2 n :a+ 3 2 n :r 4 -2 n
-:a+ 2 2 n :r 4 -2 n :d 3 2 n :r 4 -2 n :f 2 2 n :r 4 -2 n :a+ 3 2 n :r 4 -2 n
+:a+ 3 2 n :r 4 -2 n :d 4 2 n :r 4 -2 n :f 3 2 n :r 4 -2 n :a+ 4 2 n :r 4 -2 n
+:a+ 3 2 n :r 4 -2 n :d 4 2 n :r 4 -2 n :f 3 2 n :r 4 -2 n :a+ 4 2 n :r 4 -2 n
 
-:a 3 2 n :r 4 -2 n :a 2 2 n :r 4 -2 n :e 3 2 n :r 4 -2 n :a 2 2 n :r 4 -2 n
-:a 3 2 n :r 4 -2 n :g 3 2 n :r 4 -2 n :f+ 3 2 n :r 4 -2 n :e 3 2 n :r 4 -2 n
+:a 4 2 n :r 4 -2 n :a 3 2 n :r 4 -2 n :e 4 2 n :r 4 -2 n :a 3 2 n :r 4 -2 n
+:a 4 2 n :r 4 -2 n :g 4 2 n :r 4 -2 n :f+ 4 2 n :r 4 -2 n :e 4 2 n :r 4 -2 n
 
-:a 3 4 n
+:a 4 4 n
 seq
 () swap append
 
@@ -65,21 +65,21 @@ swap over
 
 % sequence 2
 ()
-:a 3 4 n :e 3 4 n :a 3 4 n :e 3 4 n
-:g 3 4 n :e 3 4 n :g 3 4 n :e 3 4 n
-:f 3 4 n :d 3 4 n :f 3 4 n :d 3 4 n
-:c+ 3 4 n :e 3 4 n :a 2 4 n :e 3 4 n
+:a 4 4 n :e 4 4 n :a 4 4 n :e 4 4 n
+:g 4 4 n :e 4 4 n :g 4 4 n :e 4 4 n
+:f 4 4 n :d 4 4 n :f 4 4 n :d 4 4 n
+:c+ 4 4 n :e 4 4 n :a 3 4 n :e 4 4 n
 
-:a 3 4 n :e 3 4 n :a 3 4 n :e 3 4 n
-:g 3 4 n :e 3 4 n :g 3 4 n :e 3 4 n
-:f 3 4 n :d 3 4 n :f 3 4 n :d 3 4 n
-:c+ 3 4 n :e 3 4 n :a 2 4 n :e 3 4 n
+:a 4 4 n :e 4 4 n :a 4 4 n :e 4 4 n
+:g 4 4 n :e 4 4 n :g 4 4 n :e 4 4 n
+:f 4 4 n :d 4 4 n :f 4 4 n :d 4 4 n
+:c+ 4 4 n :e 4 4 n :a 3 4 n :e 4 4 n
 
-:a 3 4 n :e 3 4 n :a 3 4 n :e 3 4 n
-:g 3 4 n :e 3 4 n :g 3 4 n :e 3 4 n
-:f 3 4 n :d 3 4 n :f 3 4 n :d 3 4 n
-:c+ 3 4 n :e 3 4 n :a 2 4 n :e 3 4 n
-:f+ 3 4 n
+:a 4 4 n :e 4 4 n :a 4 4 n :e 4 4 n
+:g 4 4 n :e 4 4 n :g 4 4 n :e 4 4 n
+:f 4 4 n :d 4 4 n :f 4 4 n :d 4 4 n
+:c+ 4 4 n :e 4 4 n :a 3 4 n :e 4 4 n
+:f+ 4 4 n
 seq
 rot swap append
 
@@ -95,17 +95,17 @@ swap over
 ()
 :r 3 -6 n :r 3 -6 n :r 3 -6 n :r 3 -6 n :r 3 -6 n
 
-:f+ 3 5 n :r 3 -4 n
-:e 3 2 n :r 3 -2 n :f+ 3 2 n :r 3 -2 n :g 3 5 n :r 3 -4 n
-:f+ 3 2 n :r 3 -2 n :g 3 2 n :r 3 -2 n :a 3 5 n :r 3 -4 n
-:a 3 2 n :r 3 -2 n :a+ 3 2 n :r 3 -2 n :a 3 5 n :r 3 -4 n :r 3 -4 n
+:f+ 4 4 n :f+ 4 4 n :r 3 -4 n
+:e 4 2 n :r 3 -2 n :f+ 4 2 n :r 3 -2 n :g 4 5 n :r 3 -4 n
+:f+ 4 2 n :r 3 -2 n :g 4 2 n :r 3 -2 n :a 4 5 n :r 3 -4 n
+:a 4 2 n :r 3 -2 n :a+ 4 2 n :r 3 -2 n :a 4 5 n :r 3 -4 n :r 3 -4 n
 
-:f+ 3 5 n :r 3 -4 n
-:e 3 2 n :r 3 -2 n :f+ 3 2 n :r 3 -2 n :g 3 5 n :r 3 -4 n
-:f+ 3 2 n :r 3 -2 n :g 3 2 n :r 3 -2 n :a 3 4 n :d 3 4 n :r 3 -4 n
-:a 3 2 n :r 3 -2 n :g 3 2 n :f+ 3 2 n :e 3 5 n :r 3 -4 n :r 3 -4 n
+:f+ 4 4 n :f+ 4 4 n :r 3 -4 n
+:e 4 2 n :r 3 -2 n :f+ 4 2 n :r 3 -2 n :g 4 5 n :r 3 -4 n
+:f+ 4 2 n :r 3 -2 n :g 4 2 n :r 3 -2 n :a 4 4 n :d 4 4 n :r 3 -4 n
+:a 4 2 n :r 3 -2 n :g 4 2 n :f+ 4 2 n :e 4 5 n :r 3 -4 n :r 3 -4 n
 
-:d 3 5 n
+:d 4 5 n
 seq
 rot swap append
 
