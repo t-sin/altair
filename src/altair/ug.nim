@@ -38,28 +38,22 @@ type
 
 method procUG*(ug: Saw, mi: MasterInfo): Signal =
   var
-    ph_diff = ug.freq / mi.sampleRate / 2
-    ph = ug.phase mod 1.0f32
+    ph_diff = 440 / mi.sampleRate
+    ph = ug.phase
     s: Signal
 
-  if ph == 0.0f32:
-    s = (1.0f32, 1.0f32)
-  else:
-    var v = -2 * ph + 1
-    s = (v, v)
-
+  var v = 2 * (ph - floor(ph)) - 1
   ug.phase = ph + ph_diff
-  s
+  (v, v)
 
 method procUG*(ug: Sin, mi: MasterInfo): Signal =
   var
     ph_diff = ug.freq / (mi.sampleRate / PI)
     ph = ug.phase mod (2 * PI).float32
     v = sin(ph)
-    s: Signal = (v, v)
 
   ug.phase = ph + ph_diff
-  s
+  (v, v)
 
 method procUG*(ug: Rnd, mi: MasterInfo): Signal =
   if ug.phase >= ug.freq:
